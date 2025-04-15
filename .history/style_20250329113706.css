@@ -1,0 +1,35 @@
+*{
+    
+}
+
+.page{
+    background-color: rgb(251, 248, 240);
+    margin: auto;
+    width: fit-content;
+    height: fit-content;
+    padding-top: 4em;
+    padding-bottom: 4em;
+    padding-left: 2.5em;
+    padding-right: 2.5em;
+}
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(15, 40px);
+    grid-template-rows: repeat(22, 40px);
+    outline: 3px solid rgb(88, 181, 253);
+    width: fit-content;
+    margin: auto;
+}
+.grid-item {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    outline: 1px solid rgb(88, 181, 253);
+    width: 40px;
+    height: 40px;
+}
+.sub-cell {
+    outline: 0.5px dotted rgb(88, 181, 253);
+    width: 100%;
+    height: 100%;
+}
