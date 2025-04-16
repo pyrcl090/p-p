@@ -117,11 +117,9 @@
   }
 
   .overlay-link {
-    color: rgb(1, 119, 255);
+    color: #00f;
     text-decoration: underline;
-    display: block;
-  }
-  .grid-image{
+    font-weight: bold;
     display: block;
   }
   

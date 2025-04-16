@@ -266,7 +266,6 @@ function placeSpacer() {
 
 const channels = [
   'p-pp-vz1bkeezvp0',
-  // Add more slugs here
 ];
 
 const menuLink = 'https://are.na/rusalka';
@@ -287,7 +286,6 @@ channels.forEach((slug, index) => {
       toggleLink.addEventListener('click', () => {
         const container = document.getElementById(toggleId);
         if (container) {
-          // Toggle display: none to hide/show content
           container.style.display = container.style.display === 'none' ? 'grid' : 'none';
         }
       });
@@ -304,18 +302,15 @@ channels.forEach((slug, index) => {
 
       const channelContainer = document.createElement('div');
       channelContainer.id = toggleId;
-      // Ensure channel content is initially hidden
-      channelContainer.style.display = 'none'; // Initially hidden
+      channelContainer.style.display = 'none';
       channelContainer.style.gridTemplateColumns = `repeat(${cols}, 30px)`;
       channelContainer.style.gridAutoRows = '30px';
       channelContainer.style.gridColumn = '1 / span ' + cols;
       channelContainer.style.gridRow = currentRow;
-      channelContainer.style.display = 'grid';
       overlayGrid.appendChild(channelContainer);
 
       currentCol = 0;
 
-      // Place title and description inside hidden container
       if (data.metadata && data.metadata.description) {
         placeText(`${data.title}\n${data.metadata.description}\n`, false, '', channelContainer);
       } else {
@@ -338,7 +333,6 @@ channels.forEach((slug, index) => {
           img.style.width = '100%';
           img.style.height = '100%';
           img.style.opacity = '.8';
-          img.style.display = 'none'; // Ensure images are initially hidden
           overlayGrid.appendChild(img);
           currentCol = 0;
           currentRow = row - 1 + spanRows + 1;

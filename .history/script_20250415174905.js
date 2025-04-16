@@ -287,7 +287,6 @@ channels.forEach((slug, index) => {
       toggleLink.addEventListener('click', () => {
         const container = document.getElementById(toggleId);
         if (container) {
-          // Toggle display: none to hide/show content
           container.style.display = container.style.display === 'none' ? 'grid' : 'none';
         }
       });
@@ -304,8 +303,7 @@ channels.forEach((slug, index) => {
 
       const channelContainer = document.createElement('div');
       channelContainer.id = toggleId;
-      // Ensure channel content is initially hidden
-      channelContainer.style.display = 'none'; // Initially hidden
+      channelContainer.style.display = 'none';
       channelContainer.style.gridTemplateColumns = `repeat(${cols}, 30px)`;
       channelContainer.style.gridAutoRows = '30px';
       channelContainer.style.gridColumn = '1 / span ' + cols;
@@ -338,7 +336,6 @@ channels.forEach((slug, index) => {
           img.style.width = '100%';
           img.style.height = '100%';
           img.style.opacity = '.8';
-          img.style.display = 'none'; // Ensure images are initially hidden
           overlayGrid.appendChild(img);
           currentCol = 0;
           currentRow = row - 1 + spanRows + 1;

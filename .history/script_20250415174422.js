@@ -231,7 +231,7 @@ function nextFreeCell(spanCols = 1, spanRows = 1) {
   }
 }
 
-function placeText(text, isLink = false, linkHref = '', container = overlayGrid) {
+function placeText(text, isLink = false, linkHref = '') {
   for (const char of text) {
     if (char === '\n') {
       currentCol = 0;
@@ -250,12 +250,11 @@ function placeText(text, isLink = false, linkHref = '', container = overlayGrid)
       a.textContent = char;
       a.style.pointerEvents = 'auto';
       a.style.textDecoration = 'none';
-      a.style.color = 'inherit';
       overlayItem.appendChild(a);
     } else {
       overlayItem.textContent = char;
     }
-    container.appendChild(overlayItem);
+    overlayGrid.appendChild(overlayItem);
   }
 }
 
@@ -269,61 +268,21 @@ const channels = [
   // Add more slugs here
 ];
 
+// Add menu link
 const menuLink = 'https://are.na/rusalka';
 placeText('p, p text about etc\n', true, menuLink);
 placeSpacer();
 
-channels.forEach((slug, index) => {
+channels.forEach(slug => {
   fetch(`https://api.are.na/v2/channels/${slug}?per=100`)
     .then(res => res.json())
     .then(data => {
       placeSpacer();
-      const toggleId = `channel-content-${index}`;
-
-      const toggleLink = document.createElement('span');
-      toggleLink.textContent = `[${data.title}]`;
-      toggleLink.style.cursor = 'pointer';
-      toggleLink.style.textDecoration = 'underline';
-      toggleLink.addEventListener('click', () => {
-        const container = document.getElementById(toggleId);
-        if (container) {
-          // Toggle display: none to hide/show content
-          container.style.display = container.style.display === 'none' ? 'grid' : 'none';
-        }
-      });
-
-      const { row, col } = nextFreeCell();
-      const overlayItem = document.createElement('div');
-      overlayItem.className = 'overlay-item';
-      overlayItem.style.gridColumn = col;
-      overlayItem.style.gridRow = row;
-      overlayItem.appendChild(toggleLink);
-      overlayGrid.appendChild(overlayItem);
-
-      placeSpacer();
-
-      const channelContainer = document.createElement('div');
-      channelContainer.id = toggleId;
-      // Ensure channel content is initially hidden
-      channelContainer.style.display = 'none'; // Initially hidden
-      channelContainer.style.gridTemplateColumns = `repeat(${cols}, 30px)`;
-      channelContainer.style.gridAutoRows = '30px';
-      channelContainer.style.gridColumn = '1 / span ' + cols;
-      channelContainer.style.gridRow = currentRow;
-      channelContainer.style.display = 'grid';
-      overlayGrid.appendChild(channelContainer);
-
-      currentCol = 0;
-
-      // Place title and description inside hidden container
+      placeText(`${slug}\n`);
       if (data.metadata && data.metadata.description) {
-        placeText(`${data.title}\n${data.metadata.description}\n`, false, '', channelContainer);
-      } else {
-        placeText(`${data.title}\n`, false, '', channelContainer);
+        placeText(`${data.metadata.description}\n`);
       }
-
       placeSpacer();
-
       data.contents.forEach(block => {
         if (block.image && block.image.display && block.image.display.url) {
           const img = document.createElement('img');
@@ -338,13 +297,12 @@ channels.forEach((slug, index) => {
           img.style.width = '100%';
           img.style.height = '100%';
           img.style.opacity = '.8';
-          img.style.display = 'none'; // Ensure images are initially hidden
           overlayGrid.appendChild(img);
           currentCol = 0;
           currentRow = row - 1 + spanRows + 1;
         }
         const content = (block.title || block.content || '') + '\n';
-        placeText(content, false, '', channelContainer);
+        placeText(content);
       });
     });
 });

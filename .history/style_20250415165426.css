@@ -116,11 +116,17 @@
     z-index: 1;
   }
 
-  .overlay-link {
-    color: rgb(1, 119, 255);
-    text-decoration: underline;
-    display: block;
-  }
+  .overlay-item,
+.overlay-link {
+  pointer-events: auto; /* re-enable clicks for these */
+  display: block;
+  font-size: 14px;
+  white-space: pre;
+  color: blue;
+  text-decoration: underline;
+  font-weight: bold;
+  z-index: 10;
+}
   .grid-image{
     display: block;
   }
