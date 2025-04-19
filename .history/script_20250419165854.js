@@ -1,4 +1,5 @@
 
+
 const channels = [
   'p-pp-vz1bkeezvp0',
   'read-re_d-rode',
@@ -53,7 +54,7 @@ function createOverlayItem(char, isLink = false, href = '') {
 }
 
 function addTextBlock(text, container) {
-  console.log(`Adding text block: ${text}`);
+  console.log(`Adding text block: ${text}`);  // Log the text being added
   for (const char of text) {
     const div = createOverlayItem(char);
     container.appendChild(div);
@@ -67,88 +68,90 @@ function addTextBlock(text, container) {
   }
 }
 
-// ✅ New function to fetch all blocks across pages
-async function fetchAllBlocks(slug) {
-  let page = 1;
-  let blocks = [];
-  let hasMore = true;
-
-  while (hasMore) {
-    const res = await fetch(`https://api.are.na/v2/channels/${slug}?per=100&page=${page}`);
-    const data = await res.json();
-    blocks = blocks.concat(data.contents);
-    hasMore = data.contents.length === 100;
-    page++;
-  }
-
-  console.log(`Fetched ${blocks.length} blocks from channel: ${slug}`);
-  return blocks;
-}
-
-async function fillChannelContent(contentEl, slug) {
+function fillChannelContent(contentEl, slug) {
   console.log('Fetching content for channel:', slug);
-  try {
-    const blocks = await fetchAllBlocks(slug);
-    let totalCells = 0;
+  fetch(`https://api.are.na/v2/channels/${slug}?per=100`)
+    .then(res => res.json())
+    .then(data => {
+      let totalCells = 0;  // Track the total number of cells used
 
-    for (const block of blocks) {
-      console.log(`Block class: ${block.class}`, block);
-
-      if (block.image?.display?.url) {
-        const img = document.createElement('img');
-        img.src = block.image.display.url;
-        img.className = 'grid-image';
-
-        const colSpan = 15;
-        const rowSpan = 10;
-
-        img.style.gridColumn = `span ${colSpan}`;
-        img.style.gridRow = `span ${rowSpan}`;
-        img.style.justifySelf = Math.random() > 0.5 ? 'flex-start' : 'flex-end';
-
-        contentEl.appendChild(img);
-        totalCells += colSpan * rowSpan;
+      // Check for metadata description and log it
+      if (data.metadata?.description) {
+        console.log(`Channel description: ${data.metadata.description}`);
+        addTextBlock(data.metadata.description, contentEl);
+        totalCells += data.metadata.description.length;
+        totalCells += (cols - (data.metadata.description.length % cols)) % cols;  // Fill remaining columns in row
       }
 
-      if (block.file?.url) {
-        const fileLink = document.createElement('a');
-        fileLink.href = block.file.url;
-        fileLink.target = '_blank';
-        fileLink.textContent = `View file: ${block.file.name || 'Document'}`;
-        contentEl.appendChild(fileLink);
-        contentEl.appendChild(document.createElement('br'));
+      // Loop through the content blocks (images, text, PDFs)
+      data.contents.forEach(block => {
+        console.log(`Processing block:`, block);  // Log the block data
 
-        totalCells += 2;
-      }
+        if (block.image?.display?.url) {
+          // Handle Image blocks
+          console.log('Found image block:', block.image.display.url);
+          const img = document.createElement('img');
+          img.src = block.image.display.url;
+          img.className = 'grid-image';
 
-      const text = block.content || block.title || block.body || '';
-      if (text) {
-        console.log(`Found text block: ${text}`);
-        addTextBlock(text, contentEl);
-        totalCells += text.length;
-        totalCells += (cols - (text.length % cols)) % cols;
-      }
-    }
+          const colSpan = 15;  // Image should always span 15 columns
+          const rowSpan = 10;  // Image should always span 5 rows
 
-    const rowsNeeded = Math.ceil(totalCells / cols);
-    const totalCellsNeeded = rowsNeeded * cols;
-    console.log(`Total content cells: ${totalCells}, allocating ${rowsNeeded} rows (${totalCellsNeeded} cells)`);
+          img.style.gridColumn = `span ${colSpan}`;
+          img.style.gridRow = `span ${rowSpan}`;
 
-    const wrapper = contentEl.closest('.grid-wrapper-inner');
-    const oldGrid = wrapper.querySelector('.grid-columns-rows');
-    if (oldGrid) oldGrid.remove();
+          // Randomly align the image left or right
+          img.style.justifySelf = Math.random() > 0.5 ? 'flex-start' : 'flex-end';
 
-    const newGrid = createGridStructure(totalCellsNeeded);
-    wrapper.insertBefore(newGrid, contentEl);
+          contentEl.appendChild(img);
 
-    loadedChannels.add(slug);
-    console.log(`Finished rendering content for: ${slug}`);
-  } catch (error) {
-    console.error(`Error fetching data for channel ${slug}:`, error);
-  }
+          // After the image, we move to the next row
+          totalCells += colSpan * rowSpan;  // Add the image's cell span to total count
+        }
+
+        if (block.file?.url) {
+          // Handle PDF or other file blocks
+          console.log('Found file block:', block.file.url);
+          const fileLink = document.createElement('a');
+          fileLink.href = block.file.url;
+          fileLink.target = '_blank';
+          fileLink.textContent = `View file: ${block.file.name || 'Document'}`;
+          contentEl.appendChild(fileLink);
+          contentEl.appendChild(document.createElement('br'));
+
+          totalCells += 2;  // Link and line break
+        }
+
+        // Handle Text Blocks (Title or Content)
+        const text = block.content || block.title || block.body || ''; // Grab text from multiple fields
+        if (text) {
+          console.log(`Found text block: ${text}`);  // Log the text block
+          addTextBlock(text, contentEl);
+          totalCells += text.length;
+          totalCells += (cols - (text.length % cols)) % cols;  // Fill remaining columns in row
+        }
+      });
+
+      // After collecting all content, recalculate total rows and cells required
+      const rowsNeeded = Math.ceil(totalCells / cols); // How many rows are needed to fit everything
+      const totalCellsNeeded = rowsNeeded * cols;  // Adjust the total cell count
+      console.log(`Total content cells: ${totalCells}, allocating ${rowsNeeded} rows (${totalCellsNeeded} cells)`);
+
+      const wrapper = contentEl.closest('.grid-wrapper-inner');
+      const oldGrid = wrapper.querySelector('.grid-columns-rows');
+      if (oldGrid) oldGrid.remove();  // Remove old grid structure if it exists
+
+      const newGrid = createGridStructure(totalCellsNeeded);  // Create a new grid structure with calculated total cells
+      wrapper.insertBefore(newGrid, contentEl);  // Insert new grid structure before the content
+
+      loadedChannels.add(slug);
+      console.log(`Content added for channel: ${slug}`);
+    })
+    .catch(error => console.error(`Error fetching data for channel ${slug}:`, error));
 }
 
 function toggleContent(id, slug) {
+  console.log(`Toggling content for ID: ${id}, slug: ${slug}`);
   const contentWrapper = document.getElementById(id);
   const contentItem = contentWrapper.closest('.channel-content');
 
@@ -201,9 +204,9 @@ function createChannelItem(channelData, index) {
 
   const contentItem = document.createElement('div');
   contentItem.className = 'grid-item channel-content';
-  contentItem.style.display = 'none';
+  contentItem.style.display = 'none'; // Start hidden
 
-  const contentGrid = createGridStructure(200);
+  const contentGrid = createGridStructure(200); // placeholder size, updates dynamically
   const contentOverlay = document.createElement('div');
   contentOverlay.className = 'grid-content';
   contentOverlay.id = contentId;

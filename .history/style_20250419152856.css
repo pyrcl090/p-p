@@ -16,13 +16,12 @@ html, body {
 }
 
 body {
-
+  padding: 2em 1em;
 }
 
 .grid-wrapper {
-  padding: 2em;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   flex-direction: column;
   width: 100%;
@@ -101,27 +100,22 @@ body {
 }
 
 .grid-image {
-  width: 100%;  /* Ensure it fills the available width of the wrapper */
-  display: block;  /* Block display to avoid inline issues */
-  object-fit: contain;  /* Maintain aspect ratio and fit within the container */
-  max-height: calc(30px * 10);  /* Ensure the image doesn't exceed the height of 5 rows */
-  margin: 0; /* Remove any default margin */
-  opacity: .8;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  max-height: calc(30px * 5);
+  grid-row-end: span 5;
 }
 
 .grid-image-wrapper {
-  display: flex;  /* Flexbox enables easy alignment of the image */
-  justify-content: center;  /* Default alignment to center, you can change it via JS */
-  align-items: center;  /* Vertically center the image */
-  width: 100%;  /* Make sure it spans the full width of the grid column */
-  height: calc(30px * 5);  /* Ensure it takes up exactly 5 rows in height */
+  display: contents;
 }
 
 .grid-item {
   display: flex;
   flex-direction: column;
   width: fit-content;
-  opacity: .8;
 }
 
 .grid-item.channel-name {
@@ -131,7 +125,7 @@ body {
 .grid-item.channel-content {
   display: none;
 }
-/* .content-separator {
+.content-separator {
   grid-column: span 15;
-  height: 30px;
-} */
+  height: 10px;
+}

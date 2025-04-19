@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pube</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    const channels = [
+    'p-pp-vz1bkeezvp0',
+    'read-re_d-rode',
+    'putaiinnnnn'
+  ];
+  
+  const gridBorder = document.getElementById('grid-border');
+  const cols = 15;
+  const rows = 40;
+  const cellSize = 30;
+  let currentlyOpenId = null;
+  const loadedChannels = new Set();
+  
+  // 👉 Create the background grid
+  function createBaseGrid() {
+    for (let i = 0; i < cols * rows; i++) {
+      const gridItem = document.createElement('div');
+      gridItem.className = 'grid-item-base';
+      for (let j = 0; j < 4; j++) {
+        const sub = document.createElement('div');
+        sub.className = 'sub-cell';
+        gridItem.appendChild(sub);
+      }
+      gridBorder.appendChild(gridItem);
+    }
+  }
+  
+  // 👉 Create character block
+  function createCharBlock(char, isLink = false, href = '') {
+    const div = document.createElement('div');
+    div.className = 'overlay-item';
+    div.style.pointerEvents = isLink ? 'auto' : 'none';
+  
+    if (isLink) {
+      const a = document.createElement('a');
+      a.href = href;
+      a.target = '_blank';
+      a.textContent = char;
+      a.style.textDecoration = 'none';
+      a.style.color = 'inherit';
+      div.appendChild(a);
+    } else {
+      div.textContent = char;
+    }
+  
+    return div;
+  }
+  
+  // 👉 Create and append a .grid-item for a channel name
+  function createChannelName(title, slug, index) {
+    const item = document.createElement('div');
+    item.className = 'grid-item channel-name';
+  
+    const grid = document.createElement('div');
+    grid.className = 'grid-columns-rows';
+  
+    const content = document.createElement('div');
+    content.className = 'grid-content';
+  
+    const contentId = `channel-content-${index}`;
+    item.setAttribute('data-target', contentId);
+    item.addEventListener('click', () => toggleContent(contentId, slug));
+  
+    for (const char of title) {
+      const block = createCharBlock(char);
+      content.appendChild(block);
+    }
+  
+    grid.appendChild(content);
+    item.appendChild(grid);
+    return item;
+  }
+  
+  // 👉 Create and append a .grid-item for channel content
+  function createChannelContent(slug, index) {
+    const item = document.createElement('div');
+    item.className = 'grid-item channel-content';
+    item.id = `channel-content-${index}`;
+  
+    const grid = document.createElement('div');
+    grid.className = 'grid-columns-rows';
+  
+    const content = document.createElement('div');
+    content.className = 'grid-content';
+  
+    grid.appendChild(content);
+    item.appendChild(grid);
+    return { item, content };
+  }
+  
+  // 👉 Place text blocks inside grid
+  function placeTextBlock(text, container) {
+    for (const char of text) {
+      const div = createCharBlock(char);
+      container.appendChild(div);
+    }
+  
+    const remainder = text.length % cols;
+    if (remainder !== 0) {
+      for (let i = 0; i < cols - remainder; i++) {
+        container.appendChild(document.createElement('div'));
+      }
+    }
+  }
+  
+  // 👉 Toggle channel content visibility
+  function toggleContent(id, slug) {
+    if (currentlyOpenId && currentlyOpenId !== id) {
+      const prev = document.getElementById(currentlyOpenId);
+      if (prev) prev.style.display = 'none';
+    }
+  
+    const contentEl = document.getElementById(id);
+    const isOpen = contentEl.style.display === 'grid';
+  
+    if (isOpen) {
+      contentEl.style.display = 'none';
+      currentlyOpenId = null;
+      return;
+    }
+  
+    currentlyOpenId = id;
+    contentEl.style.display = 'grid';
+  
+    if (!loadedChannels.has(slug)) {
+      fetch(`https://api.are.na/v2/channels/${slug}?per=100`)
+        .then(res => res.json())
+        .then(data => {
+          const gridContent = contentEl.querySelector('.grid-content');
+  
+          if (data.metadata?.description) {
+            placeTextBlock(data.metadata.description + '\n', gridContent);
+          }
+  
+          data.contents.forEach(block => {
+            if (block.image?.display?.url) {
+              const img = document.createElement('img');
+              img.src = block.image.display.url;
+              img.className = 'grid-image';
+              img.style.gridColumn = `span ${Math.floor(Math.random() * 6) + 3}`;
+              img.style.gridRow = `span 5`;
+              img.style.width = '100%';
+              img.style.height = '100%';
+              img.style.objectFit = 'cover';
+              img.style.opacity = '0.85';
+              gridContent.appendChild(img);
+            }
+  
+            const text = (block.title || block.content || '') + '\n';
+            placeTextBlock(text, gridContent);
+          });
+  
+          loadedChannels.add(slug);
+        });
+    }
+  }
+  
+  // 👉 Setup grid and insert channels
+  function setupChannels() {
+    channels.forEach((slug, index) => {
+      fetch(`https://api.are.na/v2/channels/${slug}?per=1`)
+        .then(res => res.json())
+        .then(data => {
+          const title = data.title || `Channel ${index + 1}`;
+          const nameEl = createChannelName(title, slug, index);
+          const { item: contentEl } = createChannelContent(slug, index);
+          gridBorder.appendChild(nameEl);
+          gridBorder.appendChild(contentEl);
+        });
+    });
+  }
+  
+  // Initial setup
+  createBaseGrid();
+  setupChannels();
+  
+
+        <!-- <div class="grid-wrapper">
+          <div class="grid-container"></div>
+          <div class="overlay-grid"></div>
+        </div> -->
+        
+        <script src="script.js" async defer></script>
+</body>
+</html>

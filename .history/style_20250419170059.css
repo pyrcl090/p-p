@@ -106,7 +106,6 @@ body {
   object-fit: contain;  /* Maintain aspect ratio and fit within the container */
   max-height: calc(30px * 10);  /* Ensure the image doesn't exceed the height of 5 rows */
   margin: 0; /* Remove any default margin */
-  opacity: .8;
 }
 
 .grid-image-wrapper {
