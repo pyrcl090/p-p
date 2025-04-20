@@ -20,7 +20,7 @@ html, body {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  flex-direction: column;
+  flex-direction: row;
   width: 100%;
   min-height: 100vh;
   box-sizing: border-box;
@@ -28,7 +28,7 @@ html, body {
 
 .grid-border {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   gap: 2em;
 }

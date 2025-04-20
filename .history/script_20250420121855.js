@@ -1,6 +1,18 @@
-const channels = [
-  'p-ppianissimo',
-  'l-horreur' // Add more channels here
+const channels = ['p-ppianissimo', 'another-channel', 'third-one'];
+
+const customChannelTitles = [
+  {
+    html: `<img src="./BACK.png" style="width: 100%; height: auto;" />`,
+    rowSpan: 2
+  },
+  {
+    html: `<div style="text-align: center;"><b>Another Project</b></div>`,
+    rowSpan: 1
+  },
+  {
+    html: `<img src="./BACK.png" style="height: 60px;" />`,
+    rowSpan: 3
+  }
 ];
 
 const menuItems = [
@@ -9,30 +21,6 @@ const menuItems = [
     content: '                          is a collection of personal projects by a p.'
   }
 ];
-
-// Custom HTML titles for each channel
-const channelTitles = {
-  'p-ppianissimo': '<img src="./BACK.png" style="object-fit: cover; width: 100%; height: 100%;">',
-  'example-channel-2': 'Another Channel Title'
-};
-
-// Background settings for each channel
-const channelBackgrounds = {
-  'p-ppianissimo': {
-    hover: 'linear-gradient(to right, #ffc0cb, #ffffff)',
-    active: 'url("./BACK.png") center/cover'
-  },
-  'example-channel-2': {
-    hover: '#e0e0e0',
-    active: '#c0c0c0'
-  }
-};
-
-// Unique font settings per channel
-const channelFonts = {
-  'p-ppianissimo': 'Georgia, serif',
-  'l-horreur': '"Courier New", monospace'
-};
 
 const gridBorder = document.getElementById('grid-border');
 const cols = 15;
@@ -118,12 +106,6 @@ async function fillChannelContent(contentEl, slug) {
       fetchAllBlocks(slug)
     ]);
 
-    // 👇 Apply font if defined for this channel
-    const fontFamily = channelFonts[slug];
-    if (fontFamily && contentEl instanceof HTMLElement) {
-      contentEl.style.fontFamily = fontFamily;
-    }
-
     let totalCells = 0;
 
     if (channelMeta.metadata?.description) {
@@ -156,6 +138,7 @@ async function fillChannelContent(contentEl, slug) {
         fileLink.textContent = `View file: ${block.file.name || 'Document'}`;
         contentEl.appendChild(fileLink);
         contentEl.appendChild(document.createElement('br'));
+
         totalCells += 2;
       }
 
@@ -191,7 +174,6 @@ function toggleContent(id, slug) {
     const prevWrapper = document.getElementById(currentlyOpenId);
     const prevItem = prevWrapper?.closest('.channel-content');
     if (prevItem) prevItem.style.display = 'none';
-    document.body.style.background = '';
   }
 
   const isOpen = contentItem.style.display === 'block';
@@ -199,7 +181,6 @@ function toggleContent(id, slug) {
   if (isOpen) {
     contentItem.style.display = 'none';
     currentlyOpenId = null;
-    document.body.style.background = '';
   } else {
     contentItem.style.display = 'block';
     currentlyOpenId = id;
@@ -207,48 +188,29 @@ function toggleContent(id, slug) {
     if (!loadedChannels.has(slug)) {
       fillChannelContent(contentWrapper, slug);
     }
-
-    if (channelBackgrounds[slug]?.active) {
-      document.body.style.background = channelBackgrounds[slug].active;
-    }
   }
 }
 
-function createChannelItem(channelData, index) {
+function createChannelItem(channelData, index, customHTML = null, rowSpan = 1) {
   const slug = channelData.slug;
   const contentId = `channel-content-${index}`;
-  const customHTML = channelTitles[slug] || null;
+
   const nameItem = document.createElement('div');
   nameItem.className = 'grid-item channel-name';
-  nameItem.dataset.slug = slug;
+  nameItem.style.gridRow = `span ${rowSpan}`;
 
   const wrapper = document.createElement('div');
   wrapper.className = 'grid-wrapper-inner';
 
-  const grid = createGridStructure(cols);
   const content = document.createElement('div');
   content.className = 'grid-content';
 
   if (customHTML) {
-    const isImage = /<img/i.test(customHTML.trim());
-    if (isImage) {
-      const customContainer = document.createElement('div');
-      customContainer.innerHTML = customHTML;
-      customContainer.style.gridColumn = `span ${cols}`;
-      customContainer.style.gridRow = `span 1`;
-      customContainer.style.cursor = 'pointer';
-      customContainer.addEventListener('click', () => toggleContent(contentId, slug));
-      content.appendChild(customContainer);
-    } else {
-      const tempEl = document.createElement('div');
-      tempEl.innerHTML = customHTML;
-      const text = tempEl.innerText;
-      const textContainer = document.createElement('div');
-      textContainer.style.cursor = 'pointer';
-      textContainer.addEventListener('click', () => toggleContent(contentId, slug));
-      addTextBlock(text, textContainer);
-      content.appendChild(textContainer);
-    }
+    const customElement = document.createElement('div');
+    customElement.innerHTML = customHTML;
+    customElement.style.cursor = 'pointer';
+    customElement.addEventListener('click', () => toggleContent(contentId, slug));
+    content.appendChild(customElement);
   } else {
     const title = channelData.title || `Channel ${index + 1}`;
     for (const char of title) {
@@ -259,18 +221,7 @@ function createChannelItem(channelData, index) {
     }
   }
 
-  nameItem.addEventListener('mouseover', () => {
-    if (channelBackgrounds[slug]?.hover) {
-      document.body.style.background = channelBackgrounds[slug].hover;
-    }
-  });
-
-  nameItem.addEventListener('mouseout', () => {
-    if (currentlyOpenId !== contentId) {
-      document.body.style.background = '';
-    }
-  });
-
+  const grid = createGridStructure(15); // One row
   wrapper.appendChild(grid);
   wrapper.appendChild(content);
   nameItem.appendChild(wrapper);
@@ -319,14 +270,18 @@ function renderMenu() {
   });
 }
 
-// Initialize
+// ✅ Render menu
 renderMenu();
 
+// ✅ Create all channels with custom title content
 channels.forEach((slug, index) => {
   fetch(`https://api.are.na/v2/channels/${slug}?per=1`)
     .then(res => res.json())
     .then(data => {
       data.slug = slug;
-      createChannelItem(data, index);
+      const custom = customChannelTitles[index];
+      const html = custom?.html || null;
+      const rowSpan = custom?.rowSpan || 1;
+      createChannelItem(data, index, html, rowSpan);
     });
 });

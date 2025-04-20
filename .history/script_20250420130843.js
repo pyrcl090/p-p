@@ -1,6 +1,6 @@
 const channels = [
   'p-ppianissimo',
-  'l-horreur' // Add more channels here
+  'example-channel-2' // Add more channels here
 ];
 
 const menuItems = [
@@ -12,7 +12,7 @@ const menuItems = [
 
 // Custom HTML titles for each channel
 const channelTitles = {
-  'p-ppianissimo': '<img src="./BACK.png" style="object-fit: cover; width: 100%; height: 100%;">',
+  'p-ppianissimo': '<img src="./BACK.png" style="object-fit: cover; width: 100%; height: auto;">',
   'example-channel-2': 'Another Channel Title'
 };
 
@@ -20,18 +20,12 @@ const channelTitles = {
 const channelBackgrounds = {
   'p-ppianissimo': {
     hover: 'linear-gradient(to right, #ffc0cb, #ffffff)',
-    active: 'url("./BACK.png") center/cover'
+    active: 'url("your-active-bg.jpg") center/cover'
   },
   'example-channel-2': {
     hover: '#e0e0e0',
     active: '#c0c0c0'
   }
-};
-
-// Unique font settings per channel
-const channelFonts = {
-  'p-ppianissimo': 'Georgia, serif',
-  'l-horreur': '"Courier New", monospace'
 };
 
 const gridBorder = document.getElementById('grid-border');
@@ -118,12 +112,6 @@ async function fillChannelContent(contentEl, slug) {
       fetchAllBlocks(slug)
     ]);
 
-    // 👇 Apply font if defined for this channel
-    const fontFamily = channelFonts[slug];
-    if (fontFamily && contentEl instanceof HTMLElement) {
-      contentEl.style.fontFamily = fontFamily;
-    }
-
     let totalCells = 0;
 
     if (channelMeta.metadata?.description) {
@@ -191,6 +179,8 @@ function toggleContent(id, slug) {
     const prevWrapper = document.getElementById(currentlyOpenId);
     const prevItem = prevWrapper?.closest('.channel-content');
     if (prevItem) prevItem.style.display = 'none';
+
+    // Reset background
     document.body.style.background = '';
   }
 
@@ -208,6 +198,7 @@ function toggleContent(id, slug) {
       fillChannelContent(contentWrapper, slug);
     }
 
+    // Set active background
     if (channelBackgrounds[slug]?.active) {
       document.body.style.background = channelBackgrounds[slug].active;
     }

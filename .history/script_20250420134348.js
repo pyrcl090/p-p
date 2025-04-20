@@ -28,7 +28,47 @@ const channelBackgrounds = {
   }
 };
 
-// Unique font settings per channel
+const gridBorder = document.getElementById('grid-border');
+const cols = 15;
+const cellSize = 30;
+let currentlyOpenId = null;
+const loadedChannels = new Set();
+
+function createGridStructure(numItems) {
+  const grid = document.createElement('div');
+  grid.className = 'grid-columns-rows';
+  const rows = Math.ceil(numItems / cols);
+  const totalCells = rows * cols;
+
+const channels = [
+  'p-ppianissimo',
+  'l-horreur'
+];
+
+const menuItems = [
+  {
+    title: 'p p',
+    content: '                          is a collection of personal projects by a p.'
+  }
+];
+
+const channelTitles = {
+  'p-ppianissimo': '<img src="./BACK.png" style="object-fit: cover; width: 100%; height: 100%;">',
+  'example-channel-2': 'Another Channel Title'
+};
+
+const channelBackgrounds = {
+  'p-ppianissimo': {
+    hover: 'linear-gradient(to right, #ffc0cb, #ffffff)',
+    active: 'url("./BACK.png") center/cover'
+  },
+  'example-channel-2': {
+    hover: '#e0e0e0',
+    active: '#c0c0c0'
+  }
+};
+
+// 🔠 Unique font per channel
 const channelFonts = {
   'p-ppianissimo': 'Georgia, serif',
   'l-horreur': '"Courier New", monospace'
@@ -118,10 +158,10 @@ async function fillChannelContent(contentEl, slug) {
       fetchAllBlocks(slug)
     ]);
 
-    // 👇 Apply font if defined for this channel
-    const fontFamily = channelFonts[slug];
-    if (fontFamily && contentEl instanceof HTMLElement) {
-      contentEl.style.fontFamily = fontFamily;
+    // 👇 Set custom font-family for this channel
+    const channelFont = channelFonts[slug];
+    if (channelFont) {
+      contentEl.style.fontFamily = channelFont;
     }
 
     let totalCells = 0;
@@ -137,16 +177,11 @@ async function fillChannelContent(contentEl, slug) {
         const img = document.createElement('img');
         img.src = block.image.display.url;
         img.className = 'grid-image';
-
-        const colSpan = 15;
-        const rowSpan = 10;
-
-        img.style.gridColumn = `span ${colSpan}`;
-        img.style.gridRow = `span ${rowSpan}`;
+        img.style.gridColumn = `span 15`;
+        img.style.gridRow = `span 10`;
         img.style.justifySelf = Math.random() > 0.5 ? 'flex-start' : 'flex-end';
-
         contentEl.appendChild(img);
-        totalCells += colSpan * rowSpan;
+        totalCells += 150;
       }
 
       if (block.file?.url) {
@@ -306,7 +341,6 @@ function renderMenu() {
     const menuGrid = createGridStructure(textLength);
     const menuContent = document.createElement('div');
     menuContent.className = 'grid-content';
-
     addTextBlock(text, menuContent);
 
     const menuWrapper = document.createElement('div');
@@ -319,7 +353,7 @@ function renderMenu() {
   });
 }
 
-// Initialize
+// Init
 renderMenu();
 
 channels.forEach((slug, index) => {

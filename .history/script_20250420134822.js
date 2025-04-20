@@ -3,6 +3,8 @@ const channels = [
   'l-horreur' // Add more channels here
 ];
 
+document.body.style.fontFamily = 'Georgia, serif !important';
+
 const menuItems = [
   {
     title: 'p p',

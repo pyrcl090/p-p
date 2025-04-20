@@ -28,12 +28,6 @@ const channelBackgrounds = {
   }
 };
 
-// Unique font settings per channel
-const channelFonts = {
-  'p-ppianissimo': 'Georgia, serif',
-  'l-horreur': '"Courier New", monospace'
-};
-
 const gridBorder = document.getElementById('grid-border');
 const cols = 15;
 const cellSize = 30;
@@ -118,12 +112,6 @@ async function fillChannelContent(contentEl, slug) {
       fetchAllBlocks(slug)
     ]);
 
-    // 👇 Apply font if defined for this channel
-    const fontFamily = channelFonts[slug];
-    if (fontFamily && contentEl instanceof HTMLElement) {
-      contentEl.style.fontFamily = fontFamily;
-    }
-
     let totalCells = 0;
 
     if (channelMeta.metadata?.description) {
@@ -191,6 +179,8 @@ function toggleContent(id, slug) {
     const prevWrapper = document.getElementById(currentlyOpenId);
     const prevItem = prevWrapper?.closest('.channel-content');
     if (prevItem) prevItem.style.display = 'none';
+
+    // Reset background
     document.body.style.background = '';
   }
 
@@ -208,6 +198,7 @@ function toggleContent(id, slug) {
       fillChannelContent(contentWrapper, slug);
     }
 
+    // Set active background
     if (channelBackgrounds[slug]?.active) {
       document.body.style.background = channelBackgrounds[slug].active;
     }

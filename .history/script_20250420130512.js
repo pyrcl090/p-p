@@ -1,6 +1,5 @@
 const channels = [
-  'p-ppianissimo',
-  'l-horreur' // Add more channels here
+  'p-ppianissimo'
 ];
 
 const menuItems = [
@@ -9,30 +8,6 @@ const menuItems = [
     content: '                          is a collection of personal projects by a p.'
   }
 ];
-
-// Custom HTML titles for each channel
-const channelTitles = {
-  'p-ppianissimo': '<img src="./BACK.png" style="object-fit: cover; width: 100%; height: 100%;">',
-  'example-channel-2': 'Another Channel Title'
-};
-
-// Background settings for each channel
-const channelBackgrounds = {
-  'p-ppianissimo': {
-    hover: 'linear-gradient(to right, #ffc0cb, #ffffff)',
-    active: 'url("./BACK.png") center/cover'
-  },
-  'example-channel-2': {
-    hover: '#e0e0e0',
-    active: '#c0c0c0'
-  }
-};
-
-// Unique font settings per channel
-const channelFonts = {
-  'p-ppianissimo': 'Georgia, serif',
-  'l-horreur': '"Courier New", monospace'
-};
 
 const gridBorder = document.getElementById('grid-border');
 const cols = 15;
@@ -95,6 +70,7 @@ function addTextBlock(text, container) {
   }
 }
 
+// ✅ New function to fetch all blocks across pages
 async function fetchAllBlocks(slug) {
   let page = 1;
   let blocks = [];
@@ -108,31 +84,32 @@ async function fetchAllBlocks(slug) {
     page++;
   }
 
+  console.log(`Fetched ${blocks.length} blocks from channel: ${slug}`);
   return blocks;
 }
 
 async function fillChannelContent(contentEl, slug) {
+  console.log('Filling channel content:', slug);
+
   try {
     const [channelMeta, blocks] = await Promise.all([
       fetch(`https://api.are.na/v2/channels/${slug}?per=1`).then(res => res.json()),
       fetchAllBlocks(slug)
     ]);
 
-    // 👇 Apply font if defined for this channel
-    const fontFamily = channelFonts[slug];
-    if (fontFamily && contentEl instanceof HTMLElement) {
-      contentEl.style.fontFamily = fontFamily;
-    }
-
     let totalCells = 0;
 
+    // ✅ Add channel description first (if any)
     if (channelMeta.metadata?.description) {
+      console.log(`Channel description: ${channelMeta.metadata.description}`);
       addTextBlock(channelMeta.metadata.description, contentEl);
       totalCells += channelMeta.metadata.description.length;
       totalCells += (cols - (channelMeta.metadata.description.length % cols)) % cols;
     }
 
     for (const block of blocks) {
+      console.log(`Block class: ${block.class}`, block);
+
       if (block.image?.display?.url) {
         const img = document.createElement('img');
         img.src = block.image.display.url;
@@ -156,6 +133,7 @@ async function fillChannelContent(contentEl, slug) {
         fileLink.textContent = `View file: ${block.file.name || 'Document'}`;
         contentEl.appendChild(fileLink);
         contentEl.appendChild(document.createElement('br'));
+
         totalCells += 2;
       }
 
@@ -169,6 +147,7 @@ async function fillChannelContent(contentEl, slug) {
 
     const rowsNeeded = Math.ceil(totalCells / cols);
     const totalCellsNeeded = rowsNeeded * cols;
+    console.log(`Total cells needed: ${totalCellsNeeded}`);
 
     const wrapper = contentEl.closest('.grid-wrapper-inner');
     const oldGrid = wrapper.querySelector('.grid-columns-rows');
@@ -178,6 +157,7 @@ async function fillChannelContent(contentEl, slug) {
     wrapper.insertBefore(newGrid, contentEl);
 
     loadedChannels.add(slug);
+    console.log(`Finished rendering content for: ${slug}`);
   } catch (error) {
     console.error(`Error filling content for ${slug}:`, error);
   }
@@ -191,7 +171,6 @@ function toggleContent(id, slug) {
     const prevWrapper = document.getElementById(currentlyOpenId);
     const prevItem = prevWrapper?.closest('.channel-content');
     if (prevItem) prevItem.style.display = 'none';
-    document.body.style.background = '';
   }
 
   const isOpen = contentItem.style.display === 'block';
@@ -199,7 +178,6 @@ function toggleContent(id, slug) {
   if (isOpen) {
     contentItem.style.display = 'none';
     currentlyOpenId = null;
-    document.body.style.background = '';
   } else {
     contentItem.style.display = 'block';
     currentlyOpenId = id;
@@ -207,70 +185,30 @@ function toggleContent(id, slug) {
     if (!loadedChannels.has(slug)) {
       fillChannelContent(contentWrapper, slug);
     }
-
-    if (channelBackgrounds[slug]?.active) {
-      document.body.style.background = channelBackgrounds[slug].active;
-    }
   }
 }
 
 function createChannelItem(channelData, index) {
   const slug = channelData.slug;
+  const title = channelData.title || `Channel ${index + 1}`;
   const contentId = `channel-content-${index}`;
-  const customHTML = channelTitles[slug] || null;
+
   const nameItem = document.createElement('div');
   nameItem.className = 'grid-item channel-name';
-  nameItem.dataset.slug = slug;
 
-  const wrapper = document.createElement('div');
-  wrapper.className = 'grid-wrapper-inner';
-
-  const grid = createGridStructure(cols);
+  const grid = createGridStructure(title.length);
   const content = document.createElement('div');
   content.className = 'grid-content';
 
-  if (customHTML) {
-    const isImage = /<img/i.test(customHTML.trim());
-    if (isImage) {
-      const customContainer = document.createElement('div');
-      customContainer.innerHTML = customHTML;
-      customContainer.style.gridColumn = `span ${cols}`;
-      customContainer.style.gridRow = `span 1`;
-      customContainer.style.cursor = 'pointer';
-      customContainer.addEventListener('click', () => toggleContent(contentId, slug));
-      content.appendChild(customContainer);
-    } else {
-      const tempEl = document.createElement('div');
-      tempEl.innerHTML = customHTML;
-      const text = tempEl.innerText;
-      const textContainer = document.createElement('div');
-      textContainer.style.cursor = 'pointer';
-      textContainer.addEventListener('click', () => toggleContent(contentId, slug));
-      addTextBlock(text, textContainer);
-      content.appendChild(textContainer);
-    }
-  } else {
-    const title = channelData.title || `Channel ${index + 1}`;
-    for (const char of title) {
-      const item = createOverlayItem(char);
-      item.style.cursor = 'pointer';
-      item.addEventListener('click', () => toggleContent(contentId, slug));
-      content.appendChild(item);
-    }
+  for (const char of title) {
+    const item = createOverlayItem(char);
+    item.style.cursor = 'pointer';
+    item.addEventListener('click', () => toggleContent(contentId, slug));
+    content.appendChild(item);
   }
 
-  nameItem.addEventListener('mouseover', () => {
-    if (channelBackgrounds[slug]?.hover) {
-      document.body.style.background = channelBackgrounds[slug].hover;
-    }
-  });
-
-  nameItem.addEventListener('mouseout', () => {
-    if (currentlyOpenId !== contentId) {
-      document.body.style.background = '';
-    }
-  });
-
+  const wrapper = document.createElement('div');
+  wrapper.className = 'grid-wrapper-inner';
   wrapper.appendChild(grid);
   wrapper.appendChild(content);
   nameItem.appendChild(wrapper);
@@ -280,7 +218,7 @@ function createChannelItem(channelData, index) {
   contentItem.className = 'grid-item channel-content';
   contentItem.style.display = 'none';
 
-  const contentGrid = createGridStructure(200);
+  const contentGrid = createGridStructure(200); // Initial placeholder
   const contentOverlay = document.createElement('div');
   contentOverlay.className = 'grid-content';
   contentOverlay.id = contentId;
@@ -294,6 +232,7 @@ function createChannelItem(channelData, index) {
   gridBorder.appendChild(contentItem);
 }
 
+// ✅ Renders the always-visible menu with title and content
 function renderMenu() {
   menuItems.forEach((menuData, index) => {
     const text = `${menuData.title}\n${menuData.content}`;
@@ -319,7 +258,7 @@ function renderMenu() {
   });
 }
 
-// Initialize
+// ✅ Initialize menu and channels
 renderMenu();
 
 channels.forEach((slug, index) => {
