@@ -1,16 +1,18 @@
 const channels = [
-  'p-ppianissimo'
+  'p-pp-vz1bkeezvp0',
+  'read-re_d-rode',
+  'putaiinnnnn'
 ];
 
 const menuItems = [
   {
-    title: 'p p',
-    content: '                          is a collection of personal projects by a p.'
+    title: 'Menu',
+    content: 'this is a description that always shows and has a title'
   }
 ];
 
 const gridBorder = document.getElementById('grid-border');
-const cols = 15;
+const cols = ;
 const cellSize = 30;
 let currentlyOpenId = null;
 const loadedChannels = new Set();

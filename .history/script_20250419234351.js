@@ -1,5 +1,5 @@
 const channels = [
-  'p-ppianissimo'
+  'p-ppianissimo',
 ];
 
 const menuItems = [

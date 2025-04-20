@@ -1,5 +1,7 @@
 const channels = [
-  'p-ppianissimo'
+  'p-pp-vz1bkeezvp0',
+  'read-re_d-rode',
+  'putaiinnnnn'
 ];
 
 const menuItems = [

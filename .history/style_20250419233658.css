@@ -111,8 +111,8 @@ body {
 
 .grid-image-wrapper {
   display: flex;  /* Flexbox enables easy alignment of the image */
-  justify-content: flex-start;  /* Default alignment to center, you can change it via JS */
-  align-items: flex-start;  /* Vertically center the image */
+  justify-content: f;  /* Default alignment to center, you can change it via JS */
+  align-items: center;  /* Vertically center the image */
   width: 100%;  /* Make sure it spans the full width of the grid column */
   height: calc(30px * 5);  /* Ensure it takes up exactly 5 rows in height */
 }

@@ -1,11 +1,13 @@
 const channels = [
-  'p-ppianissimo'
+  'p-pp-vz1bkeezvp0',
+  'read-re_d-rode',
+  'putaiinnnnn'
 ];
 
 const menuItems = [
   {
-    title: 'p p',
-    content: '                          is a collection of personal projects by a p.'
+    title: 'Menu',
+    content: 'this is a description that always shows and has a title'
   }
 ];
 
@@ -239,26 +241,51 @@ function renderMenu() {
     const textLength = text.length;
 
     const menuItem = document.createElement('div');
-    menuItem.className = 'grid-item channel-content';
-    menuItem.style.display = 'block';
+    menuItem.className = 'grid-item channel-name';
 
-    const menuGrid = createGridStructure(textLength);
-    const menuContent = document.createElement('div');
-    menuContent.className = 'grid-content';
+    const grid = createGridStructure(textLength);
+    const content = document.createElement('div');
+    content.className = 'grid-content';
 
-    addTextBlock(text, menuContent);
+    // Add menu title and content, both clickable
+    for (const char of text) {
+      const item = createOverlayItem(char);
+      item.style.cursor = 'pointer';
+      item.addEventListener('click', () => toggleMenuContent(menuItem, menuData));
+      content.appendChild(item);
+    }
 
-    const menuWrapper = document.createElement('div');
-    menuWrapper.className = 'grid-wrapper-inner';
-    menuWrapper.appendChild(menuGrid);
-    menuWrapper.appendChild(menuContent);
-
-    menuItem.appendChild(menuWrapper);
+    const wrapper = document.createElement('div');
+    wrapper.className = 'grid-wrapper-inner';
+    wrapper.appendChild(grid);
+    wrapper.appendChild(content);
+    menuItem.appendChild(wrapper);
     gridBorder.appendChild(menuItem);
   });
 }
 
-// ✅ Initialize menu and channels
+function toggleMenuContent(menuItem, menuData) {
+  const contentWrapper = menuItem.querySelector('.grid-wrapper-inner');
+  const content = contentWrapper.querySelector('.grid-content');
+
+  const isOpen = content.style.display === 'block';
+
+  if (isOpen) {
+    content.style.display = 'none';
+  } else {
+    content.style.display = 'block';
+  }
+  
+  // Close other channel contents when menu or another channel is clicked
+  if (currentlyOpenId) {
+    const prevWrapper = document.getElementById(currentlyOpenId);
+    const prevItem = prevWrapper?.closest('.channel-content');
+    if (prevItem) prevItem.style.display = 'none';
+  }
+
+  currentlyOpenId = isOpen ? null : 'menu';
+}
+
 renderMenu();
 
 channels.forEach((slug, index) => {

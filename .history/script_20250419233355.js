@@ -1,11 +1,13 @@
 const channels = [
-  'p-ppianissimo'
+  'p-pp-vz1bkeezvp0',
+  'read-re_d-rode',
+  'putaiinnnnn'
 ];
 
 const menuItems = [
   {
-    title: 'p p',
-    content: '                          is a collection of personal projects by a p.'
+    title: 'Menu',
+    content: 'this is a description that always shows and has a title'
   }
 ];
 
@@ -238,27 +240,62 @@ function renderMenu() {
     const text = `${menuData.title}\n${menuData.content}`;
     const textLength = text.length;
 
-    const menuItem = document.createElement('div');
-    menuItem.className = 'grid-item channel-content';
-    menuItem.style.display = 'block';
+    // Create the title div for the menu
+    const menuTitle = document.createElement('div');
+    menuTitle.className = 'grid-item menu-title';
+    const titleContent = document.createElement('div');
+    titleContent.className = 'grid-content';
 
-    const menuGrid = createGridStructure(textLength);
+    for (const char of menuData.title) {
+      const item = createOverlayItem(char);
+      item.style.cursor = 'pointer';
+      item.addEventListener('click', () => toggleMenuContent(menuTitle, menuData));
+      titleContent.appendChild(item);
+    }
+
+    const wrapperTitle = document.createElement('div');
+    wrapperTitle.className = 'grid-wrapper-inner';
+    wrapperTitle.appendChild(titleContent);
+    menuTitle.appendChild(wrapperTitle);
+    gridBorder.appendChild(menuTitle);
+
+    // Create the menu content div
     const menuContent = document.createElement('div');
-    menuContent.className = 'grid-content';
+    menuContent.className = 'grid-item menu-content';
+    menuContent.style.display = 'none';  // Hidden by default
+    const contentWrapper = document.createElement('div');
+    contentWrapper.className = 'grid-wrapper-inner';
 
-    addTextBlock(text, menuContent);
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'grid-content';
+    addTextBlock(menuData.content, contentDiv);  // Add content to the menu
 
-    const menuWrapper = document.createElement('div');
-    menuWrapper.className = 'grid-wrapper-inner';
-    menuWrapper.appendChild(menuGrid);
-    menuWrapper.appendChild(menuContent);
-
-    menuItem.appendChild(menuWrapper);
-    gridBorder.appendChild(menuItem);
+    contentWrapper.appendChild(contentDiv);
+    menuContent.appendChild(contentWrapper);
+    gridBorder.appendChild(menuContent);
   });
 }
 
-// ✅ Initialize menu and channels
+function toggleMenuContent(menuTitle, menuData) {
+  const menuContent = menuTitle.nextElementSibling; // The content div comes after the title div
+
+  const isOpen = menuContent.style.display === 'block';
+  if (isOpen) {
+    menuContent.style.display = 'none';
+  } else {
+    menuContent.style.display = 'block';
+  }
+
+  // Close other content (either menu or channel)
+  if (currentlyOpenId) {
+    const prevWrapper = document.getElementById(currentlyOpenId);
+    const prevItem = prevWrapper?.closest('.channel-content');
+    if (prevItem) prevItem.style.display = 'none';
+  }
+
+  currentlyOpenId = isOpen ? null : 'menu';  // Set the ID of the open section
+}
+
 renderMenu();
 
 channels.forEach((slug, index) => {

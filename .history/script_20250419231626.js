@@ -1,12 +1,8 @@
-const channels = [
-  'p-ppianissimo'
-];
 
-const menuItems = [
-  {
-    title: 'p p',
-    content: '                          is a collection of personal projects by a p.'
-  }
+const channels = [
+  'p-pp-vz1bkeezvp0',
+  'read-re_d-rode',
+  'putaiinnnnn'
 ];
 
 const gridBorder = document.getElementById('grid-border');
@@ -231,35 +227,6 @@ function createChannelItem(channelData, index) {
   contentItem.appendChild(contentWrapper);
   gridBorder.appendChild(contentItem);
 }
-
-// ✅ Renders the always-visible menu with title and content
-function renderMenu() {
-  menuItems.forEach((menuData, index) => {
-    const text = `${menuData.title}\n${menuData.content}`;
-    const textLength = text.length;
-
-    const menuItem = document.createElement('div');
-    menuItem.className = 'grid-item channel-content';
-    menuItem.style.display = 'block';
-
-    const menuGrid = createGridStructure(textLength);
-    const menuContent = document.createElement('div');
-    menuContent.className = 'grid-content';
-
-    addTextBlock(text, menuContent);
-
-    const menuWrapper = document.createElement('div');
-    menuWrapper.className = 'grid-wrapper-inner';
-    menuWrapper.appendChild(menuGrid);
-    menuWrapper.appendChild(menuContent);
-
-    menuItem.appendChild(menuWrapper);
-    gridBorder.appendChild(menuItem);
-  });
-}
-
-// ✅ Initialize menu and channels
-renderMenu();
 
 channels.forEach((slug, index) => {
   fetch(`https://api.are.na/v2/channels/${slug}?per=1`)

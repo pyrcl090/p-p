@@ -1,11 +1,13 @@
 const channels = [
-  'p-ppianissimo'
+  'p-pp-vz1bkeezvp0',
+  'read-re_d-rode',
+  'putaiinnnnn'
 ];
 
 const menuItems = [
   {
     title: 'p p',
-    content: '                          is a collection of personal projects by a p.'
+    content: '                 is a description that always shows and has a title'
   }
 ];
 
