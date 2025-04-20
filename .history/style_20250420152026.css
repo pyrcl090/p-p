@@ -72,7 +72,6 @@ html, body {
 .grid-content {
   display: grid;
   grid-template-columns: repeat(15, 30px);
-  font-family: 'HMP';
   grid-auto-rows: 30px;
   gap: 0;
   position: absolute;
@@ -128,3 +127,7 @@ html, body {
 .grid-item.channel-content {
   display: none;
 }
+/* .content-separator {
+  grid-column: span 15;
+  height: 30px;
+} */

@@ -128,3 +128,7 @@ html, body {
 .grid-item.channel-content {
   display: none;
 }
+/* .content-separator {
+  grid-column: span 15;
+  height: 30px;
+} */

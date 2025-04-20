@@ -48,8 +48,8 @@ const channelFontStyles = {
     titleFontFamily: 'HMP',
     titleFontStyle: 'normal',
     titleFontWeight: '700',
-    contentFontFamily: 'HMP',
-    contentFontStyle: 'normal',
+    contentFontFamily: '"Courier New", monospace',
+    contentFontStyle: 'italic',
     contentFontWeight: '300'
   }
 };

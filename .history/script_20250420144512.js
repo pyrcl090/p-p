@@ -12,15 +12,15 @@ const menuItems = [
 
 // Custom HTML titles for each channel
 const channelTitles = {
-  'p-ppianissimo': '',
-  'l-horreur': ''
+  'p-ppianissimo': '<img src="./BACK.png" style="object-fit: cover; width: 100%; height: 100%;">',
+  'example-channel-2': 'Another Channel Title'
 };
 
 // Background settings for each channel
 const channelBackgrounds = {
   'p-ppianissimo': {
-    hover: 'light pink',
-    active: ''
+    hover: 'linear-gradient(to right, #ffc0cb, #ffffff)',
+    active: 'url("./BACK.png") center/cover'
   },
   'example-channel-2': {
     hover: '#e0e0e0',
@@ -28,30 +28,10 @@ const channelBackgrounds = {
   }
 };
 
-// Unique font families per channel
+// Unique font settings per channel
 const channelFonts = {
-  'p-ppianissimo': '"hiragino-mincho-pron", sans-serif',
+  'p-ppianissimo': 'Georgia, serif',
   'l-horreur': '"Courier New", monospace'
-};
-
-// ✅ Full font styling (family, weight, style)
-const channelFontStyles = {
-  'p-ppianissimo': {
-    titleFontFamily: '"hiragino-mincho-pron", sans-serif',
-    titleFontStyle: 'italic',
-    titleFontWeight: '600',
-    contentFontFamily: '"hiragino-mincho-pron", sans-serif',
-    contentFontStyle: 'normal',
-    contentFontWeight: '400'
-  },
-  'l-horreur': {
-    titleFontFamily: 'HMP',
-    titleFontStyle: 'normal',
-    titleFontWeight: '700',
-    contentFontFamily: 'HMP',
-    contentFontStyle: 'normal',
-    contentFontWeight: '300'
-  }
 };
 
 const gridBorder = document.getElementById('grid-border');
@@ -138,11 +118,15 @@ async function fillChannelContent(contentEl, slug) {
       fetchAllBlocks(slug)
     ]);
 
-    const fontStyles = channelFontStyles[slug];
-    if (fontStyles && contentEl instanceof HTMLElement) {
-      if (fontStyles.contentFontFamily) contentEl.style.setProperty('font-family', fontStyles.contentFontFamily, 'important');
-      if (fontStyles.contentFontStyle) contentEl.style.setProperty('font-style', fontStyles.contentFontStyle, 'important');
-      if (fontStyles.contentFontWeight) contentEl.style.setProperty('font-weight', fontStyles.contentFontWeight, 'important');
+    // 👇 Apply font if defined for this channel
+    const fontFamily = channelFonts[slug];
+    if (fontFamily && contentEl instanceof HTMLElement) {
+      contentEl.style.setProperty('font-family', fontFamily, 'important');
+    
+      // Force font on all children too
+      contentEl.querySelectorAll('*').forEach(el => {
+        el.style.setProperty('font-family', fontFamily, 'important');
+      });
     }
 
     let totalCells = 0;
@@ -250,14 +234,6 @@ function createChannelItem(channelData, index) {
   const content = document.createElement('div');
   content.className = 'grid-content';
 
-  // ✅ Apply font styles to channel title
-  const fontStyles = channelFontStyles[slug];
-  if (fontStyles) {
-    if (fontStyles.titleFontFamily) content.style.setProperty('font-family', fontStyles.titleFontFamily, 'important');
-    if (fontStyles.titleFontStyle) content.style.setProperty('font-style', fontStyles.titleFontStyle, 'important');
-    if (fontStyles.titleFontWeight) content.style.setProperty('font-weight', fontStyles.titleFontWeight, 'important');
-  }
-
   if (customHTML) {
     const isImage = /<img/i.test(customHTML.trim());
     if (isImage) {
@@ -359,12 +335,3 @@ channels.forEach((slug, index) => {
       createChannelItem(data, index);
     });
 });
-
-(function(d) {
-  var config = {
-    kitId: 'sho3ojz',
-    scriptTimeout: 3000,
-    async: true
-  },
-  h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
-})(document);

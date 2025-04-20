@@ -49,7 +49,7 @@ const channelFontStyles = {
     titleFontStyle: 'normal',
     titleFontWeight: '700',
     contentFontFamily: 'HMP',
-    contentFontStyle: 'normal',
+
     contentFontWeight: '300'
   }
 };
