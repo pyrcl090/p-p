@@ -28,10 +28,30 @@ const channelBackgrounds = {
   }
 };
 
-// Unique font settings per channel
+// Unique font families per channel
 const channelFonts = {
   'p-ppianissimo': '"hiragino-mincho-pron", sans-serif',
   'l-horreur': '"Courier New", monospace'
+};
+
+// ✅ Full font styling (family, weight, style)
+const channelFontStyles = {
+  'p-ppianissimo': {
+    titleFontFamily: '"hiragino-mincho-pron", sans-serif',
+    titleFontStyle: 'italic',
+    titleFontWeight: '600',
+    contentFontFamily: '"hiragino-mincho-pron", sans-serif',
+    contentFontStyle: 'normal',
+    contentFontWeight: '400'
+  },
+  'l-horreur': {
+    titleFontFamily: 'HMP',
+    titleFontStyle: 'normal',
+    titleFontWeight: '700',
+    contentFontFamily: 'HMP',
+    contentFontStyle: 'normal',
+    contentFontWeight: '300'
+  }
 };
 
 const gridBorder = document.getElementById('grid-border');
@@ -81,49 +101,18 @@ function createOverlayItem(char, isLink = false, href = '') {
   return div;
 }
 
-function addTextBlock(rawText, container) {
-  let totalCells = 0;
-  const parts = rawText.split('<br>');
-
-  for (let i = 0; i < parts.length; i++) {
-    const part = parts[i];
-
-    // Process each character in the current part of text
-    for (const char of part) {
-      const div = createOverlayItem(char);
-      container.appendChild(div);
-      totalCells++;
-    }
-
-    // Calculate remainder and add padding if necessary
-    const remainder = part.length % cols;
-    if (remainder !== 0) {
-      const padding = cols - remainder;
-      for (let j = 0; j < padding; j++) {
-        container.appendChild(document.createElement('div'));
-        totalCells++;
-      }
-    }
-
-    // Add empty row after <br> (except for the last part)
-    if (i < parts.length - 1) {
-      console.log(`Adding empty row after <br> at index ${i}.`); // Log for debugging
-      for (let j = 0; j < cols; j++) {
-        container.appendChild(document.createElement('div'));
-        totalCells++;
-      }
-    }
+function addTextBlock(text, container) {
+  for (const char of text) {
+    const div = createOverlayItem(char);
+    container.appendChild(div);
   }
 
-  // Log the total cells after adding the text block
-  console.log(`Total cells after adding text block: ${totalCells}`); // Log for debugging
-
-  // Recalculate grid size (rows and cells) after text block
-  const rowsNeeded = Math.ceil(totalCells / cols);
-  const totalCellsNeeded = rowsNeeded * cols;
-
-  console.log(`Recalculated total cells: ${totalCellsNeeded}`); // Log for debugging
-  return totalCellsNeeded;
+  const remainder = text.length % cols;
+  if (remainder !== 0) {
+    for (let i = 0; i < cols - remainder; i++) {
+      container.appendChild(document.createElement('div'));
+    }
+  }
 }
 
 async function fetchAllBlocks(slug) {
@@ -149,9 +138,11 @@ async function fillChannelContent(contentEl, slug) {
       fetchAllBlocks(slug)
     ]);
 
-    const fontFamily = channelFonts[slug];
-    if (fontFamily && contentEl instanceof HTMLElement) {
-      contentEl.style.setProperty('font-family', fontFamily, 'important');
+    const fontStyles = channelFontStyles[slug];
+    if (fontStyles && contentEl instanceof HTMLElement) {
+      if (fontStyles.contentFontFamily) contentEl.style.setProperty('font-family', fontStyles.contentFontFamily, 'important');
+      if (fontStyles.contentFontStyle) contentEl.style.setProperty('font-style', fontStyles.contentFontStyle, 'important');
+      if (fontStyles.contentFontWeight) contentEl.style.setProperty('font-weight', fontStyles.contentFontWeight, 'important');
     }
 
     let totalCells = 0;
@@ -259,10 +250,12 @@ function createChannelItem(channelData, index) {
   const content = document.createElement('div');
   content.className = 'grid-content';
 
-  // 👉 Font override for channel title
-  const fontFamily = channelFonts[slug];
-  if (fontFamily) {
-    content.style.setProperty('font-family', fontFamily, 'important');
+  // ✅ Apply font styles to channel title
+  const fontStyles = channelFontStyles[slug];
+  if (fontStyles) {
+    if (fontStyles.titleFontFamily) content.style.setProperty('font-family', fontStyles.titleFontFamily, 'important');
+    if (fontStyles.titleFontStyle) content.style.setProperty('font-style', fontStyles.titleFontStyle, 'important');
+    if (fontStyles.titleFontWeight) content.style.setProperty('font-weight', fontStyles.titleFontWeight, 'important');
   }
 
   if (customHTML) {

@@ -1,6 +1,6 @@
 const channels = [
   'p-ppianissimo',
-  'l-horreur' // Add more channels here
+  'l-horreur'
 ];
 
 const menuItems = [
@@ -10,13 +10,11 @@ const menuItems = [
   }
 ];
 
-// Custom HTML titles for each channel
 const channelTitles = {
   'p-ppianissimo': '',
   'l-horreur': ''
 };
 
-// Background settings for each channel
 const channelBackgrounds = {
   'p-ppianissimo': {
     hover: 'light pink',
@@ -28,7 +26,6 @@ const channelBackgrounds = {
   }
 };
 
-// Unique font settings per channel
 const channelFonts = {
   'p-ppianissimo': '"hiragino-mincho-pron", sans-serif',
   'l-horreur': '"Courier New", monospace'
@@ -41,10 +38,13 @@ let currentlyOpenId = null;
 const loadedChannels = new Set();
 
 function createGridStructure(numItems) {
+  console.log(`Creating grid with ${numItems} total cells.`); // Log for debugging
   const grid = document.createElement('div');
   grid.className = 'grid-columns-rows';
   const rows = Math.ceil(numItems / cols);
   const totalCells = rows * cols;
+  
+  console.log(`Grid will have ${rows} rows and ${totalCells} total cells.`); // Log for debugging
 
   for (let i = 0; i < totalCells; i++) {
     const cell = document.createElement('div');
@@ -83,19 +83,17 @@ function createOverlayItem(char, isLink = false, href = '') {
 
 function addTextBlock(rawText, container) {
   let totalCells = 0;
-  const parts = rawText.split('<br>');
 
+  const parts = rawText.split('<br>');
   for (let i = 0; i < parts.length; i++) {
     const part = parts[i];
 
-    // Process each character in the current part of text
     for (const char of part) {
       const div = createOverlayItem(char);
       container.appendChild(div);
       totalCells++;
     }
 
-    // Calculate remainder and add padding if necessary
     const remainder = part.length % cols;
     if (remainder !== 0) {
       const padding = cols - remainder;
@@ -105,8 +103,8 @@ function addTextBlock(rawText, container) {
       }
     }
 
-    // Add empty row after <br> (except for the last part)
     if (i < parts.length - 1) {
+      // Add empty row (15 cols)
       console.log(`Adding empty row after <br> at index ${i}.`); // Log for debugging
       for (let j = 0; j < cols; j++) {
         container.appendChild(document.createElement('div'));
@@ -115,15 +113,8 @@ function addTextBlock(rawText, container) {
     }
   }
 
-  // Log the total cells after adding the text block
   console.log(`Total cells after adding text block: ${totalCells}`); // Log for debugging
-
-  // Recalculate grid size (rows and cells) after text block
-  const rowsNeeded = Math.ceil(totalCells / cols);
-  const totalCellsNeeded = rowsNeeded * cols;
-
-  console.log(`Recalculated total cells: ${totalCellsNeeded}`); // Log for debugging
-  return totalCellsNeeded;
+  return totalCells;
 }
 
 async function fetchAllBlocks(slug) {
@@ -157,9 +148,7 @@ async function fillChannelContent(contentEl, slug) {
     let totalCells = 0;
 
     if (channelMeta.metadata?.description) {
-      addTextBlock(channelMeta.metadata.description, contentEl);
-      totalCells += channelMeta.metadata.description.length;
-      totalCells += (cols - (channelMeta.metadata.description.length % cols)) % cols;
+      totalCells += addTextBlock(channelMeta.metadata.description, contentEl);
     }
 
     for (const block of blocks) {
@@ -191,14 +180,14 @@ async function fillChannelContent(contentEl, slug) {
 
       const text = block.content || block.title || block.body || '';
       if (text) {
-        addTextBlock(text, contentEl);
-        totalCells += text.length;
-        totalCells += (cols - (text.length % cols)) % cols;
+        totalCells += addTextBlock(text, contentEl);
       }
     }
 
     const rowsNeeded = Math.ceil(totalCells / cols);
     const totalCellsNeeded = rowsNeeded * cols;
+
+    console.log(`Total cells needed: ${totalCellsNeeded}`); // Log for debugging
 
     const wrapper = contentEl.closest('.grid-wrapper-inner');
     const oldGrid = wrapper.querySelector('.grid-columns-rows');
@@ -220,7 +209,10 @@ function toggleContent(id, slug) {
   if (currentlyOpenId && currentlyOpenId !== id) {
     const prevWrapper = document.getElementById(currentlyOpenId);
     const prevItem = prevWrapper?.closest('.channel-content');
-    if (prevItem) prevItem.style.display = 'none';
+    if (prevItem) {
+      prevItem.style.display = 'none';
+      console.log(`Closed previous content: ${currentlyOpenId}`); // Log for debugging
+    }
     document.body.style.background = '';
   }
 
@@ -259,7 +251,6 @@ function createChannelItem(channelData, index) {
   const content = document.createElement('div');
   content.className = 'grid-content';
 
-  // 👉 Font override for channel title
   const fontFamily = channelFonts[slug];
   if (fontFamily) {
     content.style.setProperty('font-family', fontFamily, 'important');

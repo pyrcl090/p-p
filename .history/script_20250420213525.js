@@ -6,7 +6,7 @@ const channels = [
 const menuItems = [
   {
     title: 'p p',
-    content: '                          is a collection of personal projects by a p.'
+    content: '<br>is a collection of personal projects by a p.'
   }
 ];
 

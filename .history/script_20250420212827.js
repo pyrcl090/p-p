@@ -1,25 +1,23 @@
 const channels = [
   'p-ppianissimo',
-  'l-horreur' // Add more channels here
+  'l-horreur'
 ];
 
 const menuItems = [
   {
     title: 'p p',
-    content: '                          is a collection of personal projects by a p.'
+    content: '<br> is a collection of personal projects by a p.'
   }
 ];
 
-// Custom HTML titles for each channel
 const channelTitles = {
   'p-ppianissimo': '',
   'l-horreur': ''
 };
 
-// Background settings for each channel
 const channelBackgrounds = {
   'p-ppianissimo': {
-    hover: 'light pink',
+    hover: 'lightpink',
     active: ''
   },
   'example-channel-2': {
@@ -28,10 +26,16 @@ const channelBackgrounds = {
   }
 };
 
-// Unique font settings per channel
+// Now also allows font family and weight
 const channelFonts = {
-  'p-ppianissimo': '"hiragino-mincho-pron", sans-serif',
-  'l-horreur': '"Courier New", monospace'
+  'p-ppianissimo': {
+    family: '"hiragino-mincho-pron", sans-serif',
+    weight: '400'
+  },
+  'l-horreur': {
+    family: '"Courier New", monospace',
+    weight: '700'
+  }
 };
 
 const gridBorder = document.getElementById('grid-border');
@@ -81,49 +85,36 @@ function createOverlayItem(char, isLink = false, href = '') {
   return div;
 }
 
-function addTextBlock(rawText, container) {
-  let totalCells = 0;
-  const parts = rawText.split('<br>');
+function addTextBlock(text, container) {
+  const parts = text.split(/<br\s*\/?>/i);
+  let totalChars = 0;
 
   for (let i = 0; i < parts.length; i++) {
-    const part = parts[i];
-
-    // Process each character in the current part of text
-    for (const char of part) {
+    const line = parts[i];
+    for (const char of line) {
       const div = createOverlayItem(char);
       container.appendChild(div);
-      totalCells++;
+      totalChars++;
     }
 
-    // Calculate remainder and add padding if necessary
-    const remainder = part.length % cols;
-    if (remainder !== 0) {
-      const padding = cols - remainder;
-      for (let j = 0; j < padding; j++) {
+    if (line.length % cols !== 0) {
+      const pad = cols - (line.length % cols);
+      for (let j = 0; j < pad; j++) {
         container.appendChild(document.createElement('div'));
-        totalCells++;
       }
+      totalChars += pad;
     }
 
-    // Add empty row after <br> (except for the last part)
     if (i < parts.length - 1) {
-      console.log(`Adding empty row after <br> at index ${i}.`); // Log for debugging
+      // Add a full blank row for <br>
       for (let j = 0; j < cols; j++) {
         container.appendChild(document.createElement('div'));
-        totalCells++;
       }
+      totalChars += cols;
     }
   }
 
-  // Log the total cells after adding the text block
-  console.log(`Total cells after adding text block: ${totalCells}`); // Log for debugging
-
-  // Recalculate grid size (rows and cells) after text block
-  const rowsNeeded = Math.ceil(totalCells / cols);
-  const totalCellsNeeded = rowsNeeded * cols;
-
-  console.log(`Recalculated total cells: ${totalCellsNeeded}`); // Log for debugging
-  return totalCellsNeeded;
+  return totalChars;
 }
 
 async function fetchAllBlocks(slug) {
@@ -149,17 +140,16 @@ async function fillChannelContent(contentEl, slug) {
       fetchAllBlocks(slug)
     ]);
 
-    const fontFamily = channelFonts[slug];
-    if (fontFamily && contentEl instanceof HTMLElement) {
-      contentEl.style.setProperty('font-family', fontFamily, 'important');
+    const fontSettings = channelFonts[slug];
+    if (fontSettings && contentEl instanceof HTMLElement) {
+      contentEl.style.setProperty('font-family', fontSettings.family, 'important');
+      contentEl.style.setProperty('font-weight', fontSettings.weight, 'important');
     }
 
     let totalCells = 0;
 
     if (channelMeta.metadata?.description) {
-      addTextBlock(channelMeta.metadata.description, contentEl);
-      totalCells += channelMeta.metadata.description.length;
-      totalCells += (cols - (channelMeta.metadata.description.length % cols)) % cols;
+      totalCells += addTextBlock(channelMeta.metadata.description, contentEl);
     }
 
     for (const block of blocks) {
@@ -191,9 +181,7 @@ async function fillChannelContent(contentEl, slug) {
 
       const text = block.content || block.title || block.body || '';
       if (text) {
-        addTextBlock(text, contentEl);
-        totalCells += text.length;
-        totalCells += (cols - (text.length % cols)) % cols;
+        totalCells += addTextBlock(text, contentEl);
       }
     }
 
@@ -259,10 +247,10 @@ function createChannelItem(channelData, index) {
   const content = document.createElement('div');
   content.className = 'grid-content';
 
-  // 👉 Font override for channel title
-  const fontFamily = channelFonts[slug];
-  if (fontFamily) {
-    content.style.setProperty('font-family', fontFamily, 'important');
+  const fontSettings = channelFonts[slug];
+  if (fontSettings) {
+    content.style.setProperty('font-family', fontSettings.family, 'important');
+    content.style.setProperty('font-weight', fontSettings.weight, 'important');
   }
 
   if (customHTML) {
@@ -367,11 +355,25 @@ channels.forEach((slug, index) => {
     });
 });
 
+// Typekit loader
 (function(d) {
   var config = {
     kitId: 'sho3ojz',
     scriptTimeout: 3000,
     async: true
   },
-  h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+  h = d.documentElement, t = setTimeout(function() {
+    h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-inactive";
+  }, config.scriptTimeout), tk = d.createElement("script"), f = false, s = d.getElementsByTagName("script")[0], a;
+  h.className += " wf-loading";
+  tk.src = 'https://use.typekit.net/' + config.kitId + '.js';
+  tk.async = true;
+  tk.onload = tk.onreadystatechange = function() {
+    a = this.readyState;
+    if (f || a && a != "complete" && a != "loaded") return;
+    f = true;
+    clearTimeout(t);
+    try { Typekit.load(config) } catch (e) {}
+  };
+  s.parentNode.insertBefore(tk, s);
 })(document);

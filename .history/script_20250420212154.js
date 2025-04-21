@@ -10,13 +10,11 @@ const menuItems = [
   }
 ];
 
-// Custom HTML titles for each channel
 const channelTitles = {
   'p-ppianissimo': '',
   'l-horreur': ''
 };
 
-// Background settings for each channel
 const channelBackgrounds = {
   'p-ppianissimo': {
     hover: 'light pink',
@@ -28,10 +26,15 @@ const channelBackgrounds = {
   }
 };
 
-// Unique font settings per channel
 const channelFonts = {
-  'p-ppianissimo': '"hiragino-mincho-pron", sans-serif',
-  'l-horreur': '"Courier New", monospace'
+  'p-ppianissimo': {
+    family: '"hiragino-mincho-pron", sans-serif',
+    weight: '400'
+  },
+  'l-horreur': {
+    family: '"Courier New", monospace',
+    weight: '700'
+  }
 };
 
 const gridBorder = document.getElementById('grid-border');
@@ -62,6 +65,20 @@ function createGridStructure(numItems) {
   return grid;
 }
 
+function createSpacerRow() {
+  const spacer = document.createElement('div');
+  spacer.className = 'grid-item spacer-row';
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'grid-wrapper-inner';
+
+  const spacerGrid = createGridStructure(15); // 1 row
+  wrapper.appendChild(spacerGrid);
+
+  spacer.appendChild(wrapper);
+  return spacer;
+}
+
 function createOverlayItem(char, isLink = false, href = '') {
   const div = document.createElement('div');
   div.className = 'overlay-item';
@@ -81,49 +98,18 @@ function createOverlayItem(char, isLink = false, href = '') {
   return div;
 }
 
-function addTextBlock(rawText, container) {
-  let totalCells = 0;
-  const parts = rawText.split('<br>');
-
-  for (let i = 0; i < parts.length; i++) {
-    const part = parts[i];
-
-    // Process each character in the current part of text
-    for (const char of part) {
-      const div = createOverlayItem(char);
-      container.appendChild(div);
-      totalCells++;
-    }
-
-    // Calculate remainder and add padding if necessary
-    const remainder = part.length % cols;
-    if (remainder !== 0) {
-      const padding = cols - remainder;
-      for (let j = 0; j < padding; j++) {
-        container.appendChild(document.createElement('div'));
-        totalCells++;
-      }
-    }
-
-    // Add empty row after <br> (except for the last part)
-    if (i < parts.length - 1) {
-      console.log(`Adding empty row after <br> at index ${i}.`); // Log for debugging
-      for (let j = 0; j < cols; j++) {
-        container.appendChild(document.createElement('div'));
-        totalCells++;
-      }
-    }
+function addTextBlock(text, container) {
+  for (const char of text) {
+    const div = createOverlayItem(char);
+    container.appendChild(div);
   }
 
-  // Log the total cells after adding the text block
-  console.log(`Total cells after adding text block: ${totalCells}`); // Log for debugging
-
-  // Recalculate grid size (rows and cells) after text block
-  const rowsNeeded = Math.ceil(totalCells / cols);
-  const totalCellsNeeded = rowsNeeded * cols;
-
-  console.log(`Recalculated total cells: ${totalCellsNeeded}`); // Log for debugging
-  return totalCellsNeeded;
+  const remainder = text.length % cols;
+  if (remainder !== 0) {
+    for (let i = 0; i < cols - remainder; i++) {
+      container.appendChild(document.createElement('div'));
+    }
+  }
 }
 
 async function fetchAllBlocks(slug) {
@@ -149,9 +135,10 @@ async function fillChannelContent(contentEl, slug) {
       fetchAllBlocks(slug)
     ]);
 
-    const fontFamily = channelFonts[slug];
-    if (fontFamily && contentEl instanceof HTMLElement) {
-      contentEl.style.setProperty('font-family', fontFamily, 'important');
+    const fontSettings = channelFonts[slug];
+    if (fontSettings && contentEl instanceof HTMLElement) {
+      contentEl.style.setProperty('font-family', fontSettings.family, 'important');
+      contentEl.style.setProperty('font-weight', fontSettings.weight, 'important');
     }
 
     let totalCells = 0;
@@ -160,6 +147,7 @@ async function fillChannelContent(contentEl, slug) {
       addTextBlock(channelMeta.metadata.description, contentEl);
       totalCells += channelMeta.metadata.description.length;
       totalCells += (cols - (channelMeta.metadata.description.length % cols)) % cols;
+      contentEl.appendChild(document.createElement('br'));
     }
 
     for (const block of blocks) {
@@ -177,6 +165,7 @@ async function fillChannelContent(contentEl, slug) {
 
         contentEl.appendChild(img);
         totalCells += colSpan * rowSpan;
+        contentEl.appendChild(document.createElement('br'));
       }
 
       if (block.file?.url) {
@@ -194,6 +183,7 @@ async function fillChannelContent(contentEl, slug) {
         addTextBlock(text, contentEl);
         totalCells += text.length;
         totalCells += (cols - (text.length % cols)) % cols;
+        contentEl.appendChild(document.createElement('br'));
       }
     }
 
@@ -259,10 +249,10 @@ function createChannelItem(channelData, index) {
   const content = document.createElement('div');
   content.className = 'grid-content';
 
-  // 👉 Font override for channel title
-  const fontFamily = channelFonts[slug];
-  if (fontFamily) {
-    content.style.setProperty('font-family', fontFamily, 'important');
+  const fontSettings = channelFonts[slug];
+  if (fontSettings) {
+    content.style.setProperty('font-family', fontSettings.family, 'important');
+    content.style.setProperty('font-weight', fontSettings.weight, 'important');
   }
 
   if (customHTML) {
@@ -328,6 +318,7 @@ function createChannelItem(channelData, index) {
 
   contentItem.appendChild(contentWrapper);
   gridBorder.appendChild(contentItem);
+  gridBorder.appendChild(createSpacerRow());
 }
 
 function renderMenu() {
@@ -352,10 +343,10 @@ function renderMenu() {
 
     menuItem.appendChild(menuWrapper);
     gridBorder.appendChild(menuItem);
+    gridBorder.appendChild(createSpacerRow());
   });
 }
 
-// Initialize
 renderMenu();
 
 channels.forEach((slug, index) => {

@@ -81,49 +81,34 @@ function createOverlayItem(char, isLink = false, href = '') {
   return div;
 }
 
-function addTextBlock(rawText, container) {
-  let totalCells = 0;
-  const parts = rawText.split('<br>');
+function addTextBlock(text, container) {
+  let totalChars = 0;
+  const segments = text.split(/(<br\s*\/?>)/gi);
 
-  for (let i = 0; i < parts.length; i++) {
-    const part = parts[i];
-
-    // Process each character in the current part of text
-    for (const char of part) {
-      const div = createOverlayItem(char);
-      container.appendChild(div);
-      totalCells++;
-    }
-
-    // Calculate remainder and add padding if necessary
-    const remainder = part.length % cols;
-    if (remainder !== 0) {
-      const padding = cols - remainder;
-      for (let j = 0; j < padding; j++) {
+  for (const segment of segments) {
+    if (/<br\s*\/?>/i.test(segment)) {
+      // Add a full empty row for <br>
+      for (let i = 0; i < cols; i++) {
         container.appendChild(document.createElement('div'));
-        totalCells++;
+        totalChars++;
       }
-    }
-
-    // Add empty row after <br> (except for the last part)
-    if (i < parts.length - 1) {
-      console.log(`Adding empty row after <br> at index ${i}.`); // Log for debugging
-      for (let j = 0; j < cols; j++) {
-        container.appendChild(document.createElement('div'));
-        totalCells++;
+    } else {
+      for (const char of segment) {
+        const div = createOverlayItem(char);
+        container.appendChild(div);
+        totalChars++;
+      }
+      const remainder = segment.length % cols;
+      if (remainder !== 0) {
+        for (let i = 0; i < cols - remainder; i++) {
+          container.appendChild(document.createElement('div'));
+          totalChars++;
+        }
       }
     }
   }
 
-  // Log the total cells after adding the text block
-  console.log(`Total cells after adding text block: ${totalCells}`); // Log for debugging
-
-  // Recalculate grid size (rows and cells) after text block
-  const rowsNeeded = Math.ceil(totalCells / cols);
-  const totalCellsNeeded = rowsNeeded * cols;
-
-  console.log(`Recalculated total cells: ${totalCellsNeeded}`); // Log for debugging
-  return totalCellsNeeded;
+  return totalChars;
 }
 
 async function fetchAllBlocks(slug) {
@@ -157,9 +142,7 @@ async function fillChannelContent(contentEl, slug) {
     let totalCells = 0;
 
     if (channelMeta.metadata?.description) {
-      addTextBlock(channelMeta.metadata.description, contentEl);
-      totalCells += channelMeta.metadata.description.length;
-      totalCells += (cols - (channelMeta.metadata.description.length % cols)) % cols;
+      totalCells += addTextBlock(channelMeta.metadata.description, contentEl);
     }
 
     for (const block of blocks) {
@@ -191,20 +174,18 @@ async function fillChannelContent(contentEl, slug) {
 
       const text = block.content || block.title || block.body || '';
       if (text) {
-        addTextBlock(text, contentEl);
-        totalCells += text.length;
-        totalCells += (cols - (text.length % cols)) % cols;
+        totalCells += addTextBlock(text, contentEl);
       }
     }
-
-    const rowsNeeded = Math.ceil(totalCells / cols);
-    const totalCellsNeeded = rowsNeeded * cols;
 
     const wrapper = contentEl.closest('.grid-wrapper-inner');
     const oldGrid = wrapper.querySelector('.grid-columns-rows');
     if (oldGrid) oldGrid.remove();
 
-    const newGrid = createGridStructure(totalCellsNeeded);
+    const newGrid = createGridStructure(totalCells);
+    const rowsNeeded = Math.ceil(totalCells / cols);
+    newGrid.style.gridTemplateRows = `repeat(${rowsNeeded}, ${cellSize}px)`;
+
     wrapper.insertBefore(newGrid, contentEl);
 
     loadedChannels.add(slug);
@@ -259,7 +240,6 @@ function createChannelItem(channelData, index) {
   const content = document.createElement('div');
   content.className = 'grid-content';
 
-  // 👉 Font override for channel title
   const fontFamily = channelFonts[slug];
   if (fontFamily) {
     content.style.setProperty('font-family', fontFamily, 'important');

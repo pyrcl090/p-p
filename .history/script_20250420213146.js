@@ -1,6 +1,6 @@
 const channels = [
   'p-ppianissimo',
-  'l-horreur' // Add more channels here
+  'l-horreur'
 ];
 
 const menuItems = [
@@ -10,13 +10,11 @@ const menuItems = [
   }
 ];
 
-// Custom HTML titles for each channel
 const channelTitles = {
   'p-ppianissimo': '',
   'l-horreur': ''
 };
 
-// Background settings for each channel
 const channelBackgrounds = {
   'p-ppianissimo': {
     hover: 'light pink',
@@ -28,7 +26,6 @@ const channelBackgrounds = {
   }
 };
 
-// Unique font settings per channel
 const channelFonts = {
   'p-ppianissimo': '"hiragino-mincho-pron", sans-serif',
   'l-horreur': '"Courier New", monospace'
@@ -83,19 +80,17 @@ function createOverlayItem(char, isLink = false, href = '') {
 
 function addTextBlock(rawText, container) {
   let totalCells = 0;
-  const parts = rawText.split('<br>');
 
+  const parts = rawText.split('<br>');
   for (let i = 0; i < parts.length; i++) {
     const part = parts[i];
 
-    // Process each character in the current part of text
     for (const char of part) {
       const div = createOverlayItem(char);
       container.appendChild(div);
       totalCells++;
     }
 
-    // Calculate remainder and add padding if necessary
     const remainder = part.length % cols;
     if (remainder !== 0) {
       const padding = cols - remainder;
@@ -105,9 +100,8 @@ function addTextBlock(rawText, container) {
       }
     }
 
-    // Add empty row after <br> (except for the last part)
     if (i < parts.length - 1) {
-      console.log(`Adding empty row after <br> at index ${i}.`); // Log for debugging
+      // Add empty row (15 cols)
       for (let j = 0; j < cols; j++) {
         container.appendChild(document.createElement('div'));
         totalCells++;
@@ -115,15 +109,7 @@ function addTextBlock(rawText, container) {
     }
   }
 
-  // Log the total cells after adding the text block
-  console.log(`Total cells after adding text block: ${totalCells}`); // Log for debugging
-
-  // Recalculate grid size (rows and cells) after text block
-  const rowsNeeded = Math.ceil(totalCells / cols);
-  const totalCellsNeeded = rowsNeeded * cols;
-
-  console.log(`Recalculated total cells: ${totalCellsNeeded}`); // Log for debugging
-  return totalCellsNeeded;
+  return totalCells;
 }
 
 async function fetchAllBlocks(slug) {
@@ -157,9 +143,7 @@ async function fillChannelContent(contentEl, slug) {
     let totalCells = 0;
 
     if (channelMeta.metadata?.description) {
-      addTextBlock(channelMeta.metadata.description, contentEl);
-      totalCells += channelMeta.metadata.description.length;
-      totalCells += (cols - (channelMeta.metadata.description.length % cols)) % cols;
+      totalCells += addTextBlock(channelMeta.metadata.description, contentEl);
     }
 
     for (const block of blocks) {
@@ -191,9 +175,7 @@ async function fillChannelContent(contentEl, slug) {
 
       const text = block.content || block.title || block.body || '';
       if (text) {
-        addTextBlock(text, contentEl);
-        totalCells += text.length;
-        totalCells += (cols - (text.length % cols)) % cols;
+        totalCells += addTextBlock(text, contentEl);
       }
     }
 
@@ -259,7 +241,6 @@ function createChannelItem(channelData, index) {
   const content = document.createElement('div');
   content.className = 'grid-content';
 
-  // 👉 Font override for channel title
   const fontFamily = channelFonts[slug];
   if (fontFamily) {
     content.style.setProperty('font-family', fontFamily, 'important');
