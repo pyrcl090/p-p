@@ -42,8 +42,8 @@ html, body {
 /* Grid background */
 .grid-columns-rows {
   display: grid;
-  grid-template-columns: repeat(15, 30px);
-  grid-auto-rows: 30px;
+  grid-template-columns: repeat(18, 30px);
+  grid-auto-rows: 20px;
   gap: 0;
   outline: 1px solid rgb(88, 181, 253);
   pointer-events: none;
@@ -55,8 +55,8 @@ html, body {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
   outline: 0.5px solid rgb(88, 181, 253);
   opacity: 0.6;
 }
@@ -71,9 +71,9 @@ html, body {
 /* Overlaid text */
 .grid-content {
   display: grid;
-  grid-template-columns: repeat(15, 30px);
+  grid-template-columns: repeat(18, 30px);
   font-family: 'HMP';
-  grid-auto-rows: 30px;
+  grid-auto-rows: 20px;
   gap: 0;
   position: absolute;
   top: 0;
@@ -83,7 +83,7 @@ html, body {
 
 .overlay-item {
   width: 30px;
-  height: 30px;
+  height: 20px;
   font-size: 20px;
   text-align: center;
   display: flex;
@@ -103,7 +103,7 @@ html, body {
   object-fit: contain;  /* Maintain aspect ratio and fit within the container */
   max-height: calc(30px * 10);  /* Ensure the image doesn't exceed the height of 5 rows */
   margin: 0; /* Remove any default margin */
-  opacity: .92;
+  opacity: .9;
 }
 
 .grid-image-wrapper {
@@ -111,14 +111,14 @@ html, body {
   justify-content: flex-start;  /* Default alignment to center, you can change it via JS */
   align-items: flex-start;  /* Vertically center the image */
   width: 100%;  /* Make sure it spans the full width of the grid column */
-  height: calc(30px * 10);  /* Ensure it takes up exactly 5 rows in height */
+  height: calc(30px * 5);  /* Ensure it takes up exactly 5 rows in height */
 }
 
 .grid-item {
   display: flex;
   flex-direction: column;
   width: fit-content;
-  opacity: .9;
+  opacity: .8;
 }
 
 .grid-item.channel-name {

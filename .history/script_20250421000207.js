@@ -6,7 +6,7 @@ const channels = [
 const menuItems = [
   {
     title: 'p p',
-    content: '                          is a collection of personal and peer projects, pencil on paper, petit programs and more...'
+    content: '                          is a collection of personal projects.'
   }
 ];
 

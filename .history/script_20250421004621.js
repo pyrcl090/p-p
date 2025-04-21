@@ -35,7 +35,7 @@ const channelFonts = {
 };
 
 const gridBorder = document.getElementById('grid-border');
-const cols = 15;
+const cols = 20;
 const cellSize = 30;
 let currentlyOpenId = null;
 const loadedChannels = new Set();
@@ -168,7 +168,7 @@ async function fillChannelContent(contentEl, slug) {
         img.src = block.image.display.url;
         img.className = 'grid-image';
 
-        const colSpan = 15;
+        const colSpan = 20;
         const rowSpan = 10;
 
         img.style.gridColumn = `span ${colSpan}`;

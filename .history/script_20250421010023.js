@@ -6,7 +6,7 @@ const channels = [
 const menuItems = [
   {
     title: 'p p',
-    content: '                          is a collection of personal and peer projects, pencil on paper, petit programs and more...'
+    content: '                           is a collection of personal and peer projects, pencil on paper, petit programs and more...'
   }
 ];
 
@@ -169,7 +169,7 @@ async function fillChannelContent(contentEl, slug) {
         img.className = 'grid-image';
 
         const colSpan = 15;
-        const rowSpan = 10;
+        const rowSpan = 18;
 
         img.style.gridColumn = `span ${colSpan}`;
         img.style.gridRow = `span ${rowSpan}`;

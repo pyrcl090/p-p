@@ -35,7 +35,7 @@ const channelFonts = {
 };
 
 const gridBorder = document.getElementById('grid-border');
-const cols = 15;
+const cols = 20;
 const cellSize = 30;
 let currentlyOpenId = null;
 const loadedChannels = new Set();

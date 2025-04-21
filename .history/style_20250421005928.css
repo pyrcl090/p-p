@@ -83,8 +83,8 @@ html, body {
 
 .overlay-item {
   width: 30px;
-  height: 30px;
-  font-size: 20px;
+  height: 26px;
+  font-size: 16px;
   text-align: center;
   display: flex;
   justify-content: center;
@@ -101,7 +101,7 @@ html, body {
   width: 100%;  /* Ensure it fills the available width of the wrapper */
   display: block;  /* Block display to avoid inline issues */
   object-fit: contain;  /* Maintain aspect ratio and fit within the container */
-  max-height: calc(30px * 10);  /* Ensure the image doesn't exceed the height of 5 rows */
+  max-height: calc(26px * 10);  /* Ensure the image doesn't exceed the height of 5 rows */
   margin: 0; /* Remove any default margin */
   opacity: .92;
 }
@@ -111,7 +111,7 @@ html, body {
   justify-content: flex-start;  /* Default alignment to center, you can change it via JS */
   align-items: flex-start;  /* Vertically center the image */
   width: 100%;  /* Make sure it spans the full width of the grid column */
-  height: calc(30px * 10);  /* Ensure it takes up exactly 5 rows in height */
+  height: calc(26px * 5);  /* Ensure it takes up exactly 5 rows in height */
 }
 
 .grid-item {
