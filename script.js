@@ -1,26 +1,26 @@
 const channels = [
-  'p-ppianissimo',
+  'p-pianissimo',
   'l-horreur' // Add more channels here
 ];
 
 const menuItems = [
   {
     title: 'p p',
-    content: '                          is a collection of personal and peer projects, pencil on paper, petit programs and more...'
+    content: '                          petits projets—a collection of small projects'
   }
 ];
 
 // Custom HTML titles for each channel
 const channelTitles = {
-  'p-ppianissimo': '',
+  'p-pianissimo': '',
   'l-horreur': ''
 };
 
 // Background settings for each channel
 const channelBackgrounds = {
-  'p-ppianissimo': {
-    hover: 'light pink',
-    active: ''
+  'p-pianissimo': {
+    hover: '#f2e6ec',
+    active: '#f2e6ec'
   },
   'example-channel-2': {
     hover: '#e0e0e0',
@@ -30,7 +30,7 @@ const channelBackgrounds = {
 
 // Unique font settings per channel
 const channelFonts = {
-  'p-ppianissimo': '"hiragino-mincho-pron", sans-serif',
+  'p-pianissimo': '"hiragino-mincho-pron", sans-serif',
   'l-horreur': '"Courier New", monospace'
 };
 
@@ -169,7 +169,7 @@ async function fillChannelContent(contentEl, slug) {
         img.className = 'grid-image';
 
         const colSpan = 15;
-        const rowSpan = 10;
+        const rowSpan = 18;
 
         img.style.gridColumn = `span ${colSpan}`;
         img.style.gridRow = `span ${rowSpan}`;
