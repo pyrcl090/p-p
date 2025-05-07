@@ -91,7 +91,7 @@ html, body {
   align-items: center;
   font-weight: 300;
   font-style: normal;
-  color: rgba(113, 113, 113, 0.6);
+  color: #717171;
   line-height: 1;
   white-space: nowrap;
   pointer-events: auto;
@@ -104,7 +104,6 @@ html, body {
   max-height: calc(30px * 18);  
   margin: 0;
   opacity: .92;
-
 }
 
 .grid-image-wrapper {
@@ -115,7 +114,7 @@ html, body {
 }
 .grid-image-fullwidth {
   width: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .grid-item {

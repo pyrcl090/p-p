@@ -1,6 +1,5 @@
 const channels = [
-  'p-pianissimo',
-  'l-horreur'
+  'pube-otgnzx7hqk4'
 ];
 
 const menuItems = [
@@ -11,29 +10,24 @@ const menuItems = [
 ];
 
 const channelTitles = {
-  'p-pianissimo': '',
-  'l-horreur': '<img src="./back.png" alt="Full Row Image">'
+  'pube-otgnzx7hqk4': '<img src="./assets/pube.webp" alt="Full Row Image">'
 };
 
 const channelTitleRows = {
-  'p-pianissimo': 2,
-  'l-horreur': 3
+  'pube-otgnzx7hqk4': 1
 };
 
 const channelBackgrounds = {
-  'p-pianissimo': {
-    hover: '#f2e6ec',
-    active: '#f2e6ec'
-  },
-  'example-channel-2': {
-    hover: '#e0e0e0',
-    active: '#c0c0c0'
+  'pube-otgnzx7hqk4': {
+    hover: '',
+    active: ''
   }
 };
 
 const channelFonts = {
-  'p-pianissimo': '"hiragino-mincho-pron", sans-serif',
-  'l-horreur': '"Courier New", monospace'
+  'room-57qu7f5lkbc': '"hiragino-mincho-pron", sans-serif',
+  'l-horreur': '"Courier New", monospace',
+  'pube-otgnzx7hqk4':'"hiragino-mincho-pron", sans-serif'
 };
 
 const gridBorder = document.getElementById('grid-border');
@@ -132,24 +126,33 @@ async function fillChannelContent(contentEl, slug) {
     }
 
     let totalCells = 0;
+    const gridWrapper = document.createElement('div');
+    gridWrapper.className = 'grid-wrapper-inner';
+
+    // Add title
     if (channelMeta.metadata?.description) {
       const descCells = addTextBlock(channelMeta.metadata.description, contentEl);
       totalCells += descCells;
     }
 
+    // Add blocks (image, file, text)
     for (const block of blocks) {
       if (block.image?.display?.url) {
         const wrapper = document.createElement('div');
         wrapper.className = 'grid-image-wrapper';
         wrapper.style.gridColumn = 'span 15';
         wrapper.style.gridRow = 'span 18';
+        wrapper.style.display = 'flex';
+        wrapper.style.justifyContent = 'flex-start';
+        wrapper.style.alignItems = 'flex-end';
+        wrapper.style.width = '100%';
 
         const img = document.createElement('img');
         img.src = block.image.display.url;
         img.className = 'grid-image';
         img.style.width = '100%';
         img.style.height = `${18 * cellSize}px`;
-        img.style.objectFit = 'cover';
+        img.style.objectFit = 'contain';
 
         wrapper.appendChild(img);
         contentEl.appendChild(wrapper);
@@ -173,12 +176,16 @@ async function fillChannelContent(contentEl, slug) {
       }
     }
 
+    // Adjust grid size based on content
     const rowsNeeded = Math.ceil(totalCells / cols);
     const wrapper = contentEl.closest('.grid-wrapper-inner');
+    if (!wrapper) return;
     const oldGrid = wrapper.querySelector('.grid-columns-rows');
     if (oldGrid) oldGrid.remove();
+
     const newGrid = createGridStructure(rowsNeeded * cols);
-    wrapper.insertBefore(newGrid, contentEl);
+    gridWrapper.appendChild(newGrid);
+    wrapper.insertBefore(gridWrapper, contentEl);
     loadedChannels.add(slug);
   } catch (error) {
     console.error(`Error filling content for ${slug}:`, error);
@@ -280,10 +287,9 @@ function createChannelItem(channelData, index) {
       document.body.style.background = channelBackgrounds[slug].hover;
     }
   });
+
   nameItem.addEventListener('mouseout', () => {
-    if (currentlyOpenId !== contentId) {
-      document.body.style.background = '';
-    }
+    document.body.style.background = '';
   });
 
   wrapper.appendChild(grid);
@@ -355,8 +361,6 @@ channels.forEach((slug, index) => {
     });
 });
 
-
-
 (function(d) {
   var config = {
     kitId: 'sho3ojz',
@@ -381,3 +385,4 @@ channels.forEach((slug, index) => {
   };
   s.parentNode.insertBefore(tk, s);
 })(document);
+
