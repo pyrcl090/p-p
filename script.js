@@ -1,22 +1,25 @@
 const channels = [
   'p-pianissimo',
-  'l-horreur' // Add more channels here
+  'l-horreur'
 ];
 
 const menuItems = [
   {
     title: 'p p',
-    content: '                          petits projets—a collection of small projects'
+    content: 'petits projets—a collection of small projects'
   }
 ];
 
-// Custom HTML titles for each channel
 const channelTitles = {
   'p-pianissimo': '',
-  'l-horreur': ''
+  'l-horreur': '<img src="./back.png" alt="Full Row Image">'
 };
 
-// Background settings for each channel
+const channelTitleRows = {
+  'p-pianissimo': 2,
+  'l-horreur': 3
+};
+
 const channelBackgrounds = {
   'p-pianissimo': {
     hover: '#f2e6ec',
@@ -28,7 +31,6 @@ const channelBackgrounds = {
   }
 };
 
-// Unique font settings per channel
 const channelFonts = {
   'p-pianissimo': '"hiragino-mincho-pron", sans-serif',
   'l-horreur': '"Courier New", monospace'
@@ -45,27 +47,22 @@ function createGridStructure(numItems) {
   grid.className = 'grid-columns-rows';
   const rows = Math.ceil(numItems / cols);
   const totalCells = rows * cols;
-
   for (let i = 0; i < totalCells; i++) {
     const cell = document.createElement('div');
     cell.className = 'grid-item';
-
     for (let j = 0; j < 4; j++) {
       const sub = document.createElement('div');
       sub.className = 'sub-cell';
       cell.appendChild(sub);
     }
-
     grid.appendChild(cell);
   }
-
   return grid;
 }
 
 function createOverlayItem(char, isLink = false, href = '') {
   const div = document.createElement('div');
   div.className = 'overlay-item';
-
   if (isLink) {
     const a = document.createElement('a');
     a.href = href;
@@ -77,25 +74,19 @@ function createOverlayItem(char, isLink = false, href = '') {
   } else {
     div.textContent = char;
   }
-
   return div;
 }
 
 function addTextBlock(rawText, container) {
   let totalCells = 0;
   const parts = rawText.split('<br>');
-
   for (let i = 0; i < parts.length; i++) {
     const part = parts[i];
-
-    // Process each character in the current part of text
     for (const char of part) {
       const div = createOverlayItem(char);
       container.appendChild(div);
       totalCells++;
     }
-
-    // Calculate remainder and add padding if necessary
     const remainder = part.length % cols;
     if (remainder !== 0) {
       const padding = cols - remainder;
@@ -104,33 +95,20 @@ function addTextBlock(rawText, container) {
         totalCells++;
       }
     }
-
-    // Add empty row after <br> (except for the last part)
     if (i < parts.length - 1) {
-      console.log(`Adding empty row after <br> at index ${i}.`); // Log for debugging
       for (let j = 0; j < cols; j++) {
         container.appendChild(document.createElement('div'));
         totalCells++;
       }
     }
   }
-
-  // Log the total cells after adding the text block
-  console.log(`Total cells after adding text block: ${totalCells}`); // Log for debugging
-
-  // Recalculate grid size (rows and cells) after text block
-  const rowsNeeded = Math.ceil(totalCells / cols);
-  const totalCellsNeeded = rowsNeeded * cols;
-
-  console.log(`Recalculated total cells: ${totalCellsNeeded}`); // Log for debugging
-  return totalCellsNeeded;
+  return totalCells;
 }
 
 async function fetchAllBlocks(slug) {
   let page = 1;
   let blocks = [];
   let hasMore = true;
-
   while (hasMore) {
     const res = await fetch(`https://api.are.na/v2/channels/${slug}?per=100&page=${page}`);
     const data = await res.json();
@@ -138,7 +116,6 @@ async function fetchAllBlocks(slug) {
     hasMore = data.contents.length === 100;
     page++;
   }
-
   return blocks;
 }
 
@@ -155,28 +132,28 @@ async function fillChannelContent(contentEl, slug) {
     }
 
     let totalCells = 0;
-
     if (channelMeta.metadata?.description) {
-      addTextBlock(channelMeta.metadata.description, contentEl);
-      totalCells += channelMeta.metadata.description.length;
-      totalCells += (cols - (channelMeta.metadata.description.length % cols)) % cols;
+      const descCells = addTextBlock(channelMeta.metadata.description, contentEl);
+      totalCells += descCells;
     }
 
     for (const block of blocks) {
       if (block.image?.display?.url) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'grid-image-wrapper';
+        wrapper.style.gridColumn = 'span 15';
+        wrapper.style.gridRow = 'span 18';
+
         const img = document.createElement('img');
         img.src = block.image.display.url;
         img.className = 'grid-image';
+        img.style.width = '100%';
+        img.style.height = `${18 * cellSize}px`;
+        img.style.objectFit = 'cover';
 
-        const colSpan = 15;
-        const rowSpan = 18;
-
-        img.style.gridColumn = `span ${colSpan}`;
-        img.style.gridRow = `span ${rowSpan}`;
-        img.style.justifySelf = Math.random() > 0.5 ? 'flex-start' : 'flex-end';
-
-        contentEl.appendChild(img);
-        totalCells += colSpan * rowSpan;
+        wrapper.appendChild(img);
+        contentEl.appendChild(wrapper);
+        totalCells += 15 * 18;
       }
 
       if (block.file?.url) {
@@ -191,22 +168,17 @@ async function fillChannelContent(contentEl, slug) {
 
       const text = block.content || block.title || block.body || '';
       if (text) {
-        addTextBlock(text, contentEl);
-        totalCells += text.length;
-        totalCells += (cols - (text.length % cols)) % cols;
+        const textCells = addTextBlock(text, contentEl);
+        totalCells += textCells;
       }
     }
 
     const rowsNeeded = Math.ceil(totalCells / cols);
-    const totalCellsNeeded = rowsNeeded * cols;
-
     const wrapper = contentEl.closest('.grid-wrapper-inner');
     const oldGrid = wrapper.querySelector('.grid-columns-rows');
     if (oldGrid) oldGrid.remove();
-
-    const newGrid = createGridStructure(totalCellsNeeded);
+    const newGrid = createGridStructure(rowsNeeded * cols);
     wrapper.insertBefore(newGrid, contentEl);
-
     loadedChannels.add(slug);
   } catch (error) {
     console.error(`Error filling content for ${slug}:`, error);
@@ -225,7 +197,6 @@ function toggleContent(id, slug) {
   }
 
   const isOpen = contentItem.style.display === 'block';
-
   if (isOpen) {
     contentItem.style.display = 'none';
     currentlyOpenId = null;
@@ -233,11 +204,9 @@ function toggleContent(id, slug) {
   } else {
     contentItem.style.display = 'block';
     currentlyOpenId = id;
-
-    if (!loadedChannels.has(slug)) {
+    if (!loadedChannels.has(slug) && !slug.startsWith('menu-')) {
       fillChannelContent(contentWrapper, slug);
     }
-
     if (channelBackgrounds[slug]?.active) {
       document.body.style.background = channelBackgrounds[slug].active;
     }
@@ -254,30 +223,36 @@ function createChannelItem(channelData, index) {
 
   const wrapper = document.createElement('div');
   wrapper.className = 'grid-wrapper-inner';
-
-  const grid = createGridStructure(cols);
+  const rowsAllowed = channelTitleRows[slug] || 1;
+  const grid = createGridStructure(rowsAllowed * cols);
   const content = document.createElement('div');
   content.className = 'grid-content';
 
-  // 👉 Font override for channel title
   const fontFamily = channelFonts[slug];
   if (fontFamily) {
     content.style.setProperty('font-family', fontFamily, 'important');
   }
 
   if (customHTML) {
-    const isImage = /<img/i.test(customHTML.trim());
-    if (isImage) {
-      const customContainer = document.createElement('div');
-      customContainer.innerHTML = customHTML;
-      customContainer.style.gridColumn = `span ${cols}`;
-      customContainer.style.gridRow = `span 1`;
-      customContainer.style.cursor = 'pointer';
-      customContainer.addEventListener('click', () => toggleContent(contentId, slug));
-      content.appendChild(customContainer);
+    const tempEl = document.createElement('div');
+    tempEl.innerHTML = customHTML;
+    const img = tempEl.querySelector('img');
+    if (img) {
+      const imgWrapper = document.createElement('div');
+      imgWrapper.style.gridColumn = 'span 15';
+      imgWrapper.style.gridRow = `span ${rowsAllowed}`;
+      imgWrapper.className = 'grid-image-wrapper';
+
+      img.className = 'grid-image-fullwidth';
+      img.style.width = '100%';
+      img.style.height = `${rowsAllowed * cellSize}px`;
+      img.style.objectFit = 'cover';
+      img.style.cursor = 'pointer';
+
+      img.addEventListener('click', () => toggleContent(contentId, slug));
+      imgWrapper.appendChild(img);
+      content.appendChild(imgWrapper);
     } else {
-      const tempEl = document.createElement('div');
-      tempEl.innerHTML = customHTML;
       const text = tempEl.innerText;
       const textContainer = document.createElement('div');
       textContainer.style.cursor = 'pointer';
@@ -287,11 +262,16 @@ function createChannelItem(channelData, index) {
     }
   } else {
     const title = channelData.title || `Channel ${index + 1}`;
-    for (const char of title) {
+    const maxCells = rowsAllowed * cols;
+    for (const char of title.slice(0, maxCells)) {
       const item = createOverlayItem(char);
       item.style.cursor = 'pointer';
       item.addEventListener('click', () => toggleContent(contentId, slug));
       content.appendChild(item);
+    }
+    const padding = maxCells - title.length;
+    for (let i = 0; i < padding; i++) {
+      content.appendChild(document.createElement('div'));
     }
   }
 
@@ -300,7 +280,6 @@ function createChannelItem(channelData, index) {
       document.body.style.background = channelBackgrounds[slug].hover;
     }
   });
-
   nameItem.addEventListener('mouseout', () => {
     if (currentlyOpenId !== contentId) {
       document.body.style.background = '';
@@ -315,49 +294,58 @@ function createChannelItem(channelData, index) {
   const contentItem = document.createElement('div');
   contentItem.className = 'grid-item channel-content';
   contentItem.style.display = 'none';
-
   const contentGrid = createGridStructure(200);
   const contentOverlay = document.createElement('div');
   contentOverlay.className = 'grid-content';
   contentOverlay.id = contentId;
-
   const contentWrapper = document.createElement('div');
   contentWrapper.className = 'grid-wrapper-inner';
   contentWrapper.appendChild(contentGrid);
   contentWrapper.appendChild(contentOverlay);
-
   contentItem.appendChild(contentWrapper);
   gridBorder.appendChild(contentItem);
 }
 
 function renderMenu() {
   menuItems.forEach((menuData, index) => {
-    const text = `${menuData.title}\n${menuData.content}`;
-    const textLength = text.length;
+    const contentId = `menu-content-${index}`;
+    const slug = `menu-${index}`;
 
-    const menuItem = document.createElement('div');
-    menuItem.className = 'grid-item channel-content';
-    menuItem.style.display = 'block';
+    const titleItem = document.createElement('div');
+    titleItem.className = 'grid-item channel-name';
+    titleItem.style.cursor = 'pointer';
+    titleItem.dataset.slug = slug;
+    titleItem.addEventListener('click', () => toggleContent(contentId, slug));
 
-    const menuGrid = createGridStructure(textLength);
+    const wrapper = document.createElement('div');
+    wrapper.className = 'grid-wrapper-inner';
+    const grid = createGridStructure(cols);
+    const titleContent = document.createElement('div');
+    titleContent.className = 'grid-content';
+    addTextBlock(menuData.title, titleContent);
+    wrapper.appendChild(grid);
+    wrapper.appendChild(titleContent);
+    titleItem.appendChild(wrapper);
+    gridBorder.appendChild(titleItem);
+
+    const contentItem = document.createElement('div');
+    contentItem.className = 'grid-item channel-content';
+    contentItem.style.display = 'none';
+    const menuGrid = createGridStructure(menuData.content.length);
     const menuContent = document.createElement('div');
     menuContent.className = 'grid-content';
-
-    addTextBlock(text, menuContent);
-
-    const menuWrapper = document.createElement('div');
-    menuWrapper.className = 'grid-wrapper-inner';
-    menuWrapper.appendChild(menuGrid);
-    menuWrapper.appendChild(menuContent);
-
-    menuItem.appendChild(menuWrapper);
-    gridBorder.appendChild(menuItem);
+    menuContent.id = contentId;
+    addTextBlock(menuData.content, menuContent);
+    const contentWrapper = document.createElement('div');
+    contentWrapper.className = 'grid-wrapper-inner';
+    contentWrapper.appendChild(menuGrid);
+    contentWrapper.appendChild(menuContent);
+    contentItem.appendChild(contentWrapper);
+    gridBorder.appendChild(contentItem);
   });
 }
 
-// Initialize
 renderMenu();
-
 channels.forEach((slug, index) => {
   fetch(`https://api.are.na/v2/channels/${slug}?per=1`)
     .then(res => res.json())
@@ -367,11 +355,29 @@ channels.forEach((slug, index) => {
     });
 });
 
+
+
 (function(d) {
   var config = {
     kitId: 'sho3ojz',
     scriptTimeout: 3000,
     async: true
   },
-  h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+  h = d.documentElement,
+  t = setTimeout(function(){ h.className = h.className.replace(/\bwf-loading\b/g, '') + " wf-inactive"; }, config.scriptTimeout),
+  tk = d.createElement("script"),
+  f = false,
+  s = d.getElementsByTagName("script")[0],
+  a;
+  h.className += " wf-loading";
+  tk.src = 'https://use.typekit.net/' + config.kitId + '.js';
+  tk.async = true;
+  tk.onload = tk.onreadystatechange = function(){
+    a = this.readyState;
+    if (f || a && a !== "complete" && a !== "loaded") return;
+    f = true;
+    clearTimeout(t);
+    try { Typekit.load(config); } catch(e) {}
+  };
+  s.parentNode.insertBefore(tk, s);
 })(document);
