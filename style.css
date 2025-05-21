@@ -42,8 +42,8 @@ html, body {
 /* Grid background */
 .grid-columns-rows {
   display: grid;
-  grid-template-columns: repeat(15, 30px);
-  grid-auto-rows: 30px;
+  grid-template-columns: repeat(20, 25px);
+  grid-auto-rows: 25px;
   gap: 0;
   outline: 1px solid rgb(88, 181, 253);
   pointer-events: none;
@@ -55,8 +55,8 @@ html, body {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   outline: 0.5px solid rgb(88, 181, 253);
   opacity: 0.6;
 }
@@ -71,9 +71,9 @@ html, body {
 /* Overlaid text */
 .grid-content {
   display: grid;
-  grid-template-columns: repeat(15, 30px);
+  grid-template-columns: repeat(20, 25px);
   font-family: 'HMP';
-  grid-auto-rows: 30px;
+  grid-auto-rows: 25px;
   gap: 0;
   position: absolute;
   top: 0;
@@ -82,9 +82,9 @@ html, body {
 }
 
 .overlay-item {
-  width: 30px;
-  height: 30px;
-  font-size: 20px;
+  width: 25px;
+  height: 25px;
+  font-size: 17.5px;
   text-align: center;
   display: flex;
   justify-content: center;
@@ -92,7 +92,7 @@ html, body {
   font-weight: 300;
   font-style: normal;
   color: #717171;
-  line-height: 1;
+  line-height: 1.15;
   white-space: nowrap;
   pointer-events: auto;
 }
@@ -121,7 +121,7 @@ html, body {
   display: flex;
   flex-direction: column;
   width: fit-content;
-  opacity: .9;
+  opacity: .8;
 }
 
 .grid-item.channel-name {

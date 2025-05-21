@@ -1,11 +1,12 @@
 const channels = [
-  'pube-otgnzx7hqk4'
+  'pube-otgnzx7hqk4',
+  'possible-eggs'
 ];
 
 const menuItems = [
   {
     title: 'p p',
-    content: 'petits projets—a collection of small projects'
+    content: '    is              personal projects   public performances pencil on paper     p pianissimo        pocillum pottery    play without purpose'
   }
 ];
 
@@ -14,25 +15,29 @@ const channelTitles = {
 };
 
 const channelTitleRows = {
-  'pube-otgnzx7hqk4': 1
+  'pube-otgnzx7hqk4': 1,
+  'possible-eggs': 1
 };
 
 const channelBackgrounds = {
   'pube-otgnzx7hqk4': {
     hover: '',
     active: ''
+  },
+  'possible-eggs': {
+    hover: '',
+    active: ''
   }
 };
 
 const channelFonts = {
-  'room-57qu7f5lkbc': '"hiragino-mincho-pron", sans-serif',
-  'l-horreur': '"Courier New", monospace',
-  'pube-otgnzx7hqk4':'"hiragino-mincho-pron", sans-serif'
+  'pube-otgnzx7hqk4':'"hiragino-mincho-pron", sans-serif',
+  'possible-eggs': 'HMP'
 };
 
 const gridBorder = document.getElementById('grid-border');
-const cols = 15;
-const cellSize = 30;
+const cols = 20;
+const cellSize = 25;
 let currentlyOpenId = null;
 const loadedChannels = new Set();
 
@@ -140,7 +145,7 @@ async function fillChannelContent(contentEl, slug) {
       if (block.image?.display?.url) {
         const wrapper = document.createElement('div');
         wrapper.className = 'grid-image-wrapper';
-        wrapper.style.gridColumn = 'span 15';
+        wrapper.style.gridColumn = 'span 20';
         wrapper.style.gridRow = 'span 18';
         wrapper.style.display = 'flex';
         wrapper.style.justifyContent = 'flex-start';
@@ -156,7 +161,7 @@ async function fillChannelContent(contentEl, slug) {
 
         wrapper.appendChild(img);
         contentEl.appendChild(wrapper);
-        totalCells += 15 * 18;
+        totalCells += 20 * 18;
       }
 
       if (block.file?.url) {
@@ -246,7 +251,7 @@ function createChannelItem(channelData, index) {
     const img = tempEl.querySelector('img');
     if (img) {
       const imgWrapper = document.createElement('div');
-      imgWrapper.style.gridColumn = 'span 15';
+      imgWrapper.style.gridColumn = 'span 20';
       imgWrapper.style.gridRow = `span ${rowsAllowed}`;
       imgWrapper.className = 'grid-image-wrapper';
 
