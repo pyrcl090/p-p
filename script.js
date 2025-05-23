@@ -5,8 +5,10 @@ const channels = [
 
 const menuItems = [
   {
-    title: 'p p',
-    content: '    is              personal projects   public performances pencil on paper     p pianissimo        pocillum pottery    play without purpose'
+    title: 'pp',
+    content: 'pp, pianissimo, very softy,             is a collection of                      personal projects   public performances pencil on paper     pocillum pottery    play without purpose                    starting with p,     made very quietly.'
+    // title: 'p p',
+    // content: '    is              personal projects   public performances pencil on paper     p pianissimo        pocillum pottery    play without purpose'
   }
 ];
 
@@ -341,7 +343,7 @@ function renderMenu() {
 
     const contentItem = document.createElement('div');
     contentItem.className = 'grid-item channel-content';
-    contentItem.style.display = 'none';
+    contentItem.style.display = 'block';
     const menuGrid = createGridStructure(menuData.content.length);
     const menuContent = document.createElement('div');
     menuContent.className = 'grid-content';
@@ -354,6 +356,7 @@ function renderMenu() {
     contentItem.appendChild(contentWrapper);
     gridBorder.appendChild(contentItem);
   });
+  currentlyOpenId = `menu-content-0`;
 }
 
 renderMenu();
