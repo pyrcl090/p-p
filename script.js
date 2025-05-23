@@ -6,7 +6,7 @@ const channels = [
 const menuItems = [
   {
     title: 'pp',
-    content: 'pp, pianissimo, very softy,             is a collection of                      personal projects   public performances pencil on paper     pocillum pottery    play without purpose                    starting with p,     made very quietly.'
+    content: 'pp, pianissimo, very softy, quietly     is a collection of                      personal projects   public performances pencil on paper     pocillum pottery    play without purpose                    starting with p,    made very quietly...'
     // title: 'p p',
     // content: '    is              personal projects   public performances pencil on paper     p pianissimo        pocillum pottery    play without purpose'
   }
