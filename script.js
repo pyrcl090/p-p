@@ -5,10 +5,8 @@ const channels = [
 
 const menuItems = [
   {
-    title: 'pp',
-    content: 'pp, pianissimo, very softy, quietly     is a collection of                      personal projects   public performances pencil on paper     pocillum pottery    play without purpose                    starting with p,    made very quietly...'
-    // title: 'p p',
-    // content: '    is              personal projects   public performances pencil on paper     p pianissimo        pocillum pottery    play without purpose'
+    title: 'p p',
+    content: '   , pianissimo,     meaning very softly very quietly\nis a collection of                     personal projects   public performances pencil on paper     pocillum pottery    play without purpose                     made very quietly.'
   }
 ];
 
@@ -23,7 +21,7 @@ const channelTitleRows = {
 
 const channelBackgrounds = {
   'pube-otgnzx7hqk4': {
-    hover: '',
+    hover: './assets/BACK.jpg',
     active: ''
   },
   'possible-eggs': {
@@ -33,7 +31,7 @@ const channelBackgrounds = {
 };
 
 const channelFonts = {
-  'pube-otgnzx7hqk4':'"hiragino-mincho-pron", sans-serif',
+  'pube-otgnzx7hqk4': '"hiragino-mincho-pron", sans-serif',
   'possible-eggs': 'HMP'
 };
 
@@ -80,31 +78,69 @@ function createOverlayItem(char, isLink = false, href = '') {
 
 function addTextBlock(rawText, container) {
   let totalCells = 0;
-  const parts = rawText.split('<br>');
-  for (let i = 0; i < parts.length; i++) {
-    const part = parts[i];
-    for (const char of part) {
-      const div = createOverlayItem(char);
-      container.appendChild(div);
-      totalCells++;
+  const lines = rawText.replace(/<br\s*\/>/gi, '\n').split('\n');
+
+  for (const line of lines) {
+    const words = line.match(/\s+|\S+/g) || [];
+    let currentLine = '';
+
+    for (let word of words) {
+      while (word.length + currentLine.length > cols) {
+        if (word.trim().length > cols) {
+          const spaceLeft = cols - currentLine.length - 1;
+          const chunk = word.slice(0, spaceLeft);
+          currentLine += chunk + '-';
+
+          for (const char of currentLine) {
+            const div = createOverlayItem(char);
+            container.appendChild(div);
+            totalCells++;
+          }
+
+          word = word.slice(spaceLeft);
+          currentLine = '';
+        } else {
+          for (const char of currentLine) {
+            const div = createOverlayItem(char);
+            container.appendChild(div);
+            totalCells++;
+          }
+          const padding = cols - currentLine.length;
+          for (let j = 0; j < padding; j++) {
+            container.appendChild(document.createElement('div'));
+            totalCells++;
+          }
+          currentLine = word;
+          word = '';
+        }
+      }
+
+      currentLine += word;
     }
-    const remainder = part.length % cols;
-    if (remainder !== 0) {
-      const padding = cols - remainder;
+
+    if (currentLine.length > 0) {
+      for (const char of currentLine) {
+        const div = createOverlayItem(char);
+        container.appendChild(div);
+        totalCells++;
+      }
+      const padding = cols - currentLine.length;
       for (let j = 0; j < padding; j++) {
         container.appendChild(document.createElement('div'));
         totalCells++;
       }
     }
-    if (i < parts.length - 1) {
-      for (let j = 0; j < cols; j++) {
-        container.appendChild(document.createElement('div'));
-        totalCells++;
-      }
-    }
   }
+
   return totalCells;
 }
+
+// The rest of your code remains unchanged...
+
+
+
+
+
 
 async function fetchAllBlocks(slug) {
   let page = 1;
@@ -136,19 +172,17 @@ async function fillChannelContent(contentEl, slug) {
     const gridWrapper = document.createElement('div');
     gridWrapper.className = 'grid-wrapper-inner';
 
-    // Add title
     if (channelMeta.metadata?.description) {
       const descCells = addTextBlock(channelMeta.metadata.description, contentEl);
       totalCells += descCells;
     }
 
-    // Add blocks (image, file, text)
     for (const block of blocks) {
       if (block.image?.display?.url) {
         const wrapper = document.createElement('div');
         wrapper.className = 'grid-image-wrapper';
         wrapper.style.gridColumn = 'span 20';
-        wrapper.style.gridRow = 'span 18';
+        wrapper.style.gridRow = 'span 24';
         wrapper.style.display = 'flex';
         wrapper.style.justifyContent = 'flex-start';
         wrapper.style.alignItems = 'flex-end';
@@ -158,12 +192,12 @@ async function fillChannelContent(contentEl, slug) {
         img.src = block.image.display.url;
         img.className = 'grid-image';
         img.style.width = '100%';
-        img.style.height = `${18 * cellSize}px`;
+        img.style.height = `${24 * cellSize}px`;
         img.style.objectFit = 'contain';
 
         wrapper.appendChild(img);
         contentEl.appendChild(wrapper);
-        totalCells += 20 * 18;
+        totalCells += 20 * 24;
       }
 
       if (block.file?.url) {
@@ -183,7 +217,6 @@ async function fillChannelContent(contentEl, slug) {
       }
     }
 
-    // Adjust grid size based on content
     const rowsNeeded = Math.ceil(totalCells / cols);
     const wrapper = contentEl.closest('.grid-wrapper-inner');
     if (!wrapper) return;
@@ -207,14 +240,14 @@ function toggleContent(id, slug) {
     const prevWrapper = document.getElementById(currentlyOpenId);
     const prevItem = prevWrapper?.closest('.channel-content');
     if (prevItem) prevItem.style.display = 'none';
-    document.body.style.background = '';
+    document.body.style.backgroundImage = '';
   }
 
   const isOpen = contentItem.style.display === 'block';
   if (isOpen) {
     contentItem.style.display = 'none';
     currentlyOpenId = null;
-    document.body.style.background = '';
+    document.body.style.backgroundImage = '';
   } else {
     contentItem.style.display = 'block';
     currentlyOpenId = id;
@@ -222,7 +255,10 @@ function toggleContent(id, slug) {
       fillChannelContent(contentWrapper, slug);
     }
     if (channelBackgrounds[slug]?.active) {
-      document.body.style.background = channelBackgrounds[slug].active;
+      document.body.style.backgroundImage = `url('${channelBackgrounds[slug].active}')`;
+      document.body.style.backgroundSize = 'cover';
+      document.body.style.backgroundRepeat = 'no-repeat';
+      document.body.style.backgroundPosition = 'center';
     }
   }
 }
@@ -289,14 +325,18 @@ function createChannelItem(channelData, index) {
     }
   }
 
+  // ✅ FIXED: Hover background as image
   nameItem.addEventListener('mouseover', () => {
     if (channelBackgrounds[slug]?.hover) {
-      document.body.style.background = channelBackgrounds[slug].hover;
+      document.body.style.backgroundImage = `url('${channelBackgrounds[slug].hover}')`;
+      document.body.style.backgroundSize = 'cover';
+      document.body.style.backgroundRepeat = 'no-repeat';
+      document.body.style.backgroundPosition = 'center';
     }
   });
 
   nameItem.addEventListener('mouseout', () => {
-    document.body.style.background = '';
+    document.body.style.backgroundImage = '';
   });
 
   wrapper.appendChild(grid);
@@ -393,4 +433,3 @@ channels.forEach((slug, index) => {
   };
   s.parentNode.insertBefore(tk, s);
 })(document);
-

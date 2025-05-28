@@ -58,6 +58,7 @@ html, body {
   width: 25px;
   height: 25px;
   outline: 0.5px solid rgb(88, 181, 253);
+  background-color: rgb(247, 246, 242);
   opacity: 0.6;
 }
 
@@ -101,7 +102,7 @@ html, body {
   width: 100%;
   display: block;
   object-fit: contain; 
-  max-height: calc(30px * 18);  
+  max-height: calc(30px * 24);  
   margin: 0;
   opacity: .92;
 }
@@ -130,4 +131,58 @@ html, body {
 
 .grid-item.channel-content {
   display: none;
+}
+
+@media screen and (max-width: 700px) {
+  .grid-columns-rows {
+    grid-template-columns: repeat(20, 17.5px);
+    grid-auto-rows: 17.5px;
+  }
+
+  .grid-columns-rows .grid-item {
+    width: 17.5px;
+    height: 17.5px;
+  }
+
+  .grid-content {
+    grid-template-columns: repeat(20, 17.5px);
+    grid-auto-rows: 17.5px;
+  }
+
+  .overlay-item {
+    width: 17.5px;
+    height: 17.5px;
+    font-size: 12.25px;
+  }
+
+  .grid-image {
+    max-height: calc(30px * 24 * 0.7); /* scale height by 70% */
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .grid-columns-rows {
+    grid-template-columns: repeat(20, 16.25px);
+    grid-auto-rows: 16.25px;
+  }
+
+  .grid-columns-rows .grid-item {
+    width: 16.25px;
+    height: 16.25px;
+  }
+
+  .grid-content {
+    grid-template-columns: repeat(20, 16.25px);
+    grid-auto-rows: 16.25px;
+  }
+
+  .overlay-item {
+    width: 16.25px;
+    height: 16.25px;
+    font-size: 11.375px;
+  }
+
+  .grid-image {
+    max-height: 468px; /* 65% of 720px */
+  }
 }
