@@ -5,8 +5,8 @@ const channels = [
 
 const menuItems = [
   {
-    title: 'p p',
-    content: '   , pianissimo,     meaning very softly very quietly\nis a collection of                     personal projects   public performances pencil on paper     pocillum pottery    play without purpose                     made very quietly.'
+    title: 'pp',
+    content: '  , pianissimo,     meaning very softly very quietly\nis a collection of                    personal projects   public performances pencil on paper     pocillum pottery    play without purpose                     made very quietly.'
   }
 ];
 
