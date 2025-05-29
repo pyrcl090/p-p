@@ -138,7 +138,9 @@ html, body {
     grid-template-columns: repeat(20, 17.5px);
     grid-auto-rows: 17.5px;
   }
-
+  .grid-border {
+    gap: 1em;
+  }
   .grid-columns-rows .grid-item {
     width: 17.5px;
     height: 17.5px;
@@ -165,7 +167,9 @@ html, body {
     grid-template-columns: repeat(20, 16.25px);
     grid-auto-rows: 16.25px;
   }
-
+  .grid-border {
+    gap: 1em;
+  }
   .grid-columns-rows .grid-item {
     width: 16.25px;
     height: 16.25px;
