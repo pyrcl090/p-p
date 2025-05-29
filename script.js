@@ -21,7 +21,7 @@ const channelTitleRows = {
 
 const channelBackgrounds = {
   'pube-otgnzx7hqk4': {
-    hover: './assets/BACK.jpg',
+    hover: './assets/BACK.png',
     active: ''
   },
   'possible-eggs': {
@@ -78,9 +78,20 @@ function createOverlayItem(char, isLink = false, href = '') {
 
 function addTextBlock(rawText, container) {
   let totalCells = 0;
-  const lines = rawText.replace(/<br\s*\/>/gi, '\n').split('\n');
+  const lines = rawText.replace(/<br\s*\/?>/gi, '\n').split('\n');
 
   for (const line of lines) {
+    if (line.trim() === '') {
+      // Add a full blank row with 20 empty overlay items
+      for (let i = 0; i < cols; i++) {
+        const spacer = document.createElement('div');
+        spacer.className = 'overlay-item';
+        container.appendChild(spacer);
+        totalCells++;
+      }
+      continue;
+    }
+
     const words = line.match(/\s+|\S+/g) || [];
     let currentLine = '';
 
@@ -97,6 +108,14 @@ function addTextBlock(rawText, container) {
             totalCells++;
           }
 
+          const padding = cols - currentLine.length;
+          for (let j = 0; j < padding; j++) {
+            const empty = document.createElement('div');
+            empty.className = 'overlay-item';
+            container.appendChild(empty);
+            totalCells++;
+          }
+
           word = word.slice(spaceLeft);
           currentLine = '';
         } else {
@@ -105,11 +124,15 @@ function addTextBlock(rawText, container) {
             container.appendChild(div);
             totalCells++;
           }
+
           const padding = cols - currentLine.length;
           for (let j = 0; j < padding; j++) {
-            container.appendChild(document.createElement('div'));
+            const empty = document.createElement('div');
+            empty.className = 'overlay-item';
+            container.appendChild(empty);
             totalCells++;
           }
+
           currentLine = word;
           word = '';
         }
@@ -124,9 +147,12 @@ function addTextBlock(rawText, container) {
         container.appendChild(div);
         totalCells++;
       }
+
       const padding = cols - currentLine.length;
       for (let j = 0; j < padding; j++) {
-        container.appendChild(document.createElement('div'));
+        const empty = document.createElement('div');
+        empty.className = 'overlay-item';
+        container.appendChild(empty);
         totalCells++;
       }
     }
@@ -134,6 +160,7 @@ function addTextBlock(rawText, container) {
 
   return totalCells;
 }
+
 
 // The rest of your code remains unchanged...
 

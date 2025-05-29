@@ -12,6 +12,16 @@ html, body {
   background-color: rgb(247, 246, 242);
   margin: 0;
   padding: 0;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+body.bg-pube-otgnzx7hqk4 {
+  background-image: url('./assets/BACK.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .grid-wrapper {
