@@ -17,13 +17,6 @@ html, body {
   background-position: center;
 }
 
-body.bg-pube-otgnzx7hqk4 {
-  background-image: url('./assets/BACK.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
 .grid-wrapper {
   padding: 2em;
   display: flex;
@@ -108,25 +101,26 @@ body.bg-pube-otgnzx7hqk4 {
   pointer-events: auto;
 }
 
-.grid-image {
-  width: 100%;
-  display: block;
-  object-fit: contain; 
-  max-height: calc(30px * 24);  
-  margin: 0;
-  opacity: .92;
+.grid-image-wrapper {
+  justify-content: center;  
+  aspect-ratio: 20 / 24; /* Adjust this to match your image's aspect ratio */
+  overflow: hidden;
 }
 
-.grid-image-wrapper {
-  display: flex; 
-  justify-content: flex-start; 
-  align-items: flex-end; 
-  width: 100%;  
+.grid-image img{
+  width: auto;
+  height: auto;
+  justify-content: baseline;
+  object-fit: contain; 
+  /* display: block; */
+  opacity: 0.92;
 }
+
 .grid-image-fullwidth {
   width: 100%;
   object-fit: contain;
 }
+
 
 .grid-item {
   display: flex;
@@ -167,9 +161,7 @@ body.bg-pube-otgnzx7hqk4 {
     font-size: 12.25px;
   }
 
-  .grid-image {
-    max-height: calc(30px * 24 * 0.7); /* scale height by 70% */
-  }
+
 }
 
 @media screen and (max-width: 400px) {
@@ -184,19 +176,13 @@ body.bg-pube-otgnzx7hqk4 {
     width: 16.25px;
     height: 16.25px;
   }
-
   .grid-content {
     grid-template-columns: repeat(20, 16.25px);
     grid-auto-rows: 16.25px;
   }
-
   .overlay-item {
     width: 16.25px;
     height: 16.25px;
     font-size: 11.375px;
-  }
-
-  .grid-image {
-    max-height: 468px; /* 65% of 720px */
   }
 }

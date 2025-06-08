@@ -320,10 +320,11 @@ function createChannelItem(channelData, index) {
       imgWrapper.style.gridRow = `span ${rowsAllowed}`;
       imgWrapper.className = 'grid-image-wrapper';
 
+      // Apply the full-width class and styles ONLY to channelTitles images
       img.className = 'grid-image-fullwidth';
       img.style.width = '100%';
       img.style.height = `${rowsAllowed * cellSize}px`;
-      img.style.objectFit = 'cover';
+      img.style.objectFit = 'contain';  // changed from 'cover' to 'contain' to prevent cropping
       img.style.cursor = 'pointer';
 
       img.addEventListener('click', () => toggleContent(contentId, slug));
@@ -352,7 +353,7 @@ function createChannelItem(channelData, index) {
     }
   }
 
-  // ✅ FIXED: Hover background as image
+  // Hover background image logic unchanged
   nameItem.addEventListener('mouseover', () => {
     if (channelBackgrounds[slug]?.hover) {
       document.body.style.backgroundImage = `url('${channelBackgrounds[slug].hover}')`;
@@ -385,6 +386,7 @@ function createChannelItem(channelData, index) {
   contentItem.appendChild(contentWrapper);
   gridBorder.appendChild(contentItem);
 }
+
 
 function renderMenu() {
   menuItems.forEach((menuData, index) => {
