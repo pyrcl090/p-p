@@ -5,8 +5,8 @@ const channels = [
 
 const menuItems = [
   {
-    title: 'pp',
-    content: '  , pianissimo,     meaning very softly very quietly\nis a collection of                    personal projects   public performances pencil on paper     pocillum pottery    play without purpose                     made very quietly.'
+    title: 'p-p',
+    content: ' pencil to paper,   is a collection of                    physical abrasions personal projects   public performances pocillum pottery    play without purpose'
   }
 ];
 
@@ -219,7 +219,9 @@ async function fillChannelContent(contentEl, slug) {
         img.src = block.image.display.url;
         img.className = 'grid-image';
         img.style.width = '100%';
-        img.style.height = `${24 * cellSize}px`;
+        img.style.width = '100%';
+        img.style.objectFit = 'contain';
+        img.style.height = '100%'; 
         img.style.objectFit = 'contain';
 
         wrapper.appendChild(img);
