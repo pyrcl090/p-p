@@ -113,7 +113,7 @@ html, body {
   grid-column: span 20;
   grid-row: span 24;
   width: 100%;
-  height: 100%;  /* crucial for full height inside grid */
+  height: 100%;  
   overflow: hidden;
   justify-content: center;
   align-items: center;

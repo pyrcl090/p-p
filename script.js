@@ -1,6 +1,7 @@
 const channels = [
-  'pube-otgnzx7hqk4',
-  'possible-eggs'
+  'snsry',
+  'possible-eggs',
+  // 'p-ott-to'
 ];
 
 const menuItems = [
@@ -11,28 +12,35 @@ const menuItems = [
 ];
 
 const channelTitles = {
-  'pube-otgnzx7hqk4': '<img src="./assets/pube.webp" alt="Full Row Image">'
+  // 'pube-otgnzx7hqk4': '<img src="./assets/pube.webp" alt="Full Row Image">'
 };
 
 const channelTitleRows = {
-  'pube-otgnzx7hqk4': 1,
-  'possible-eggs': 1
+  // 'pube-otgnzx7hqk4': 1,
+  'possible-eggs': 1,
+  // 'p-ott-to': 1
 };
 
 const channelBackgrounds = {
-  'pube-otgnzx7hqk4': {
-    hover: './assets/BACK.png',
-    active: ''
-  },
+  // 'pube-otgnzx7hqk4': {
+  //   hover: './assets/BACK.png',
+  //   active: ''
+  // },
   'possible-eggs': {
     hover: '',
     active: ''
-  }
+  },
+  // 'p-ott-to': {
+  //   hover: '',
+  //   active: ''
+  // }
 };
 
 const channelFonts = {
   'pube-otgnzx7hqk4': '"hiragino-mincho-pron", sans-serif',
-  'possible-eggs': 'HMP'
+  'possible-eggs': 'HMP',
+  'p-ott-to': 'HMP'
+  
 };
 
 const gridBorder = document.getElementById('grid-border');
@@ -239,8 +247,10 @@ async function fillChannelContent(contentEl, slug) {
         totalCells += 2;
       }
 
-      const text = block.content || block.title || block.body || '';
-      if (text) {
+      const isTextBlock = block.class === 'Text' || (!block.image && !block.file);
+      const text = isTextBlock ? (block.content || block.title || block.body || '') : '';
+      
+      if (text.trim()) {
         const textCells = addTextBlock(text, contentEl);
         totalCells += textCells;
       }
